@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+        <string>Plated</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<true/>
+	
+	<!-- Camera Permission -->
+	<key>NSCameraUsageDescription</key>
+	<string>Plated needs camera access to take photos of your recipes and meals.</string>
+	
+	<!-- Photo Library Permission -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Plated needs photo library access to select photos for your recipes and profile.</string>
+	
+	<!-- Photo Library Add Permission (iOS 11+) -->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Plated needs permission to save photos to your photo library.</string>
+	
+	<!-- Location Permission (if using geolocation) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Plated uses your location to find nearby restaurants and local recipes.</string>
+	
+	<!-- Notifications Permission -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Plated sends notifications for meal reminders, timer alerts, and friend activity.</string>
+	
+	<!-- Microphone Permission (if using video) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Plated needs microphone access to record cooking videos.</string>
+	
+	<!-- Contacts Permission (if using) -->
+	<key>NSContactsUsageDescription</key>
+	<string>Plated needs contacts access to help you find friends on the platform.</string>
+	
+	<!-- Face ID Permission (if using biometrics) -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>Plated uses Face ID to securely log you in.</string>
+	
+	<!-- Allow HTTP for development (remove for production) -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	
+	<!-- Background Modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+		<string>fetch</string>
+	</array>
+	
+</dict>
+</plist>

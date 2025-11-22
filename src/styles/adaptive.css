@@ -1,0 +1,549 @@
+/* ===================================
+   ADAPTIVE LAYOUTS FOR ALL DEVICES
+   Phone | Tablet | Watch | Desktop
+   =================================== */
+
+/* ===================================
+   BASE RESPONSIVE BREAKPOINTS
+   =================================== */
+
+:root {
+  --screen-watch: 400px;
+  --screen-phone: 768px;
+  --screen-tablet: 1024px;
+  --screen-laptop: 1440px;
+  --screen-desktop: 1920px;
+  
+  /* Spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+}
+
+/* ===================================
+   PHONE LAYOUT (Default < 768px)
+   =================================== */
+
+.layout-phone {
+  /* Single column layout */
+  --columns: 1;
+  --sidebar-width: 0;
+  --content-max-width: 100%;
+  
+  /* Compact spacing */
+  --page-padding: var(--space-md);
+  --card-padding: var(--space-md);
+  --section-gap: var(--space-lg);
+}
+
+/* Recipe grid - 2 columns on phone */
+.layout-phone .recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+/* Hide sidebar on phone */
+.layout-phone .sidebar {
+  display: none;
+}
+
+/* Full width navigation */
+.layout-phone .nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* ===================================
+   TABLET LAYOUT (768px - 1024px)
+   =================================== */
+
+.layout-tablet {
+  /* Two column layout */
+  --columns: 2;
+  --sidebar-width: 240px;
+  --content-max-width: 900px;
+  
+  /* Comfortable spacing */
+  --page-padding: var(--space-lg);
+  --card-padding: var(--space-lg);
+  --section-gap: var(--space-xl);
+}
+
+@media (min-width: 768px) {
+  .layout-tablet {
+    /* Recipe grid - 3 columns portrait, 4 landscape */
+    .recipe-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    
+    /* Show sidebar in landscape */
+    &.orientation-landscape .sidebar {
+      display: block;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+    }
+    
+    /* Adjust content for sidebar */
+    &.orientation-landscape .main-content {
+      margin-left: var(--sidebar-width);
+    }
+    
+    /* Split view for messages/details */
+    .split-view {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      height: 100vh;
+    }
+  }
+}
+
+/* iPad specific */
+.device-tablet.platform-ios {
+  /* iPad Pro specific adjustments */
+  --content-max-width: 1024px;
+}
+
+/* ===================================
+   WATCH LAYOUT (< 400px)
+   =================================== */
+
+.layout-watch {
+  /* Single column, minimal spacing */
+  --columns: 1;
+  --sidebar-width: 0;
+  --content-max-width: 100%;
+  
+  /* Ultra compact */
+  --page-padding: var(--space-sm);
+  --card-padding: var(--space-sm);
+  --section-gap: var(--space-md);
+  
+  /* Larger touch targets */
+  --touch-target-size: 48px;
+}
+
+/* Watch specific styles */
+.layout-watch {
+  /* Simplified navigation */
+  .nav-bar {
+    display: none; /* Use swipe gestures or crown */
+  }
+  
+  /* Larger buttons */
+  button, .btn {
+    min-height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  /* Simplified cards */
+  .card {
+    border-radius: var(--space-md);
+    padding: var(--space-md);
+  }
+  
+  /* No grid - single column list */
+  .recipe-grid,
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  /* Compact text */
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1rem; }
+  p { font-size: 0.875rem; }
+  
+  /* Hide complex UI */
+  .advanced-features,
+  .sidebar,
+  .secondary-nav,
+  .filters {
+    display: none;
+  }
+  
+  /* Essential info only */
+  .recipe-card {
+    .description {
+      display: none;
+    }
+    .stats {
+      display: flex;
+      gap: var(--space-sm);
+      font-size: 0.75rem;
+    }
+  }
+}
+
+/* Apple Watch specific */
+.device-watch.platform-ios {
+  /* Circular display considerations */
+  .watch-safe-area {
+    padding: 8px;
+  }
+  
+  /* Digital Crown scrolling */
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  
+  .scroll-snap-item {
+    scroll-snap-align: start;
+    min-height: 100vh;
+  }
+}
+
+/* Wear OS specific */
+.device-watch.platform-android {
+  /* Round or square displays */
+  .wear-os-inset {
+    padding: 12px;
+  }
+  
+  /* Rotary input support */
+  .rotary-scrollable {
+    overflow-y: auto;
+  }
+}
+
+/* ===================================
+   DESKTOP LAYOUT (> 1024px)
+   =================================== */
+
+@media (min-width: 1024px) {
+  .layout-desktop {
+    --columns: 3;
+    --sidebar-width: 280px;
+    --content-max-width: 1200px;
+    
+    /* Spacious layout */
+    --page-padding: var(--space-2xl);
+    --card-padding: var(--space-xl);
+    --section-gap: var(--space-2xl);
+  }
+  
+  /* Always show sidebar */
+  .sidebar {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+  }
+  
+  .main-content {
+    margin-left: var(--sidebar-width);
+  }
+  
+  /* Recipe grid - 4+ columns */
+  .recipe-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  
+  /* Multi-column layout */
+  .three-column-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    gap: var(--space-xl);
+  }
+}
+
+/* ===================================
+   ORIENTATION SPECIFIC
+   =================================== */
+
+/* Portrait mode */
+.orientation-portrait {
+  /* Vertical navigation */
+  .nav-bar {
+    flex-direction: column;
+  }
+}
+
+/* Landscape mode */
+.orientation-landscape {
+  /* Horizontal navigation */
+  .nav-bar {
+    flex-direction: row;
+  }
+  
+  /* Use horizontal space */
+  .content-wrapper {
+    max-width: none;
+  }
+}
+
+/* Landscape on tablet */
+@media (min-width: 768px) and (orientation: landscape) {
+  .split-view-enabled {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    height: 100vh;
+  }
+}
+
+/* ===================================
+   ADAPTIVE COMPONENTS
+   =================================== */
+
+/* Adaptive Navigation */
+.adaptive-nav {
+  /* Phone: bottom tabs */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+@media (min-width: 768px) {
+  .adaptive-nav {
+    /* Tablet/Desktop: side nav */
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+  }
+}
+
+/* Adaptive Recipe Card */
+.recipe-card {
+  /* Phone: compact */
+  .card-image {
+    aspect-ratio: 1;
+  }
+  
+  .card-content {
+    padding: var(--space-md);
+  }
+}
+
+@media (min-width: 768px) {
+  .recipe-card {
+    /* Tablet: more detail */
+    .card-image {
+      aspect-ratio: 4/3;
+    }
+    
+    .card-content {
+      padding: var(--space-lg);
+    }
+  }
+}
+
+/* Adaptive Modal */
+.modal {
+  /* Phone: full screen */
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+@media (min-width: 768px) {
+  .modal {
+    /* Tablet/Desktop: centered */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    max-width: 600px;
+    height: auto;
+    max-height: 90vh;
+    border-radius: 1rem;
+  }
+}
+
+/* Watch: simplified modal */
+.layout-watch .modal {
+  padding: var(--space-md);
+}
+
+/* ===================================
+   TYPOGRAPHY SCALE
+   =================================== */
+
+/* Phone */
+body {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+
+/* Tablet */
+@media (min-width: 768px) {
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.5rem; }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  body {
+    font-size: 18px;
+    line-height: 1.7;
+  }
+  
+  h1 { font-size: 3rem; }
+  h2 { font-size: 2.25rem; }
+  h3 { font-size: 1.75rem; }
+}
+
+/* Watch */
+.layout-watch {
+  font-size: 14px;
+  line-height: 1.4;
+  
+  h1 { font-size: 1.25rem; }
+  h2 { font-size: 1.125rem; }
+  h3 { font-size: 1rem; }
+}
+
+/* ===================================
+   GRID SYSTEM
+   =================================== */
+
+.grid-adaptive {
+  display: grid;
+  gap: var(--space-md);
+  
+  /* Phone: 1-2 columns */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .grid-adaptive {
+    /* Tablet: 3-4 columns */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-adaptive {
+    /* Desktop: 4-6 columns */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--space-xl);
+  }
+}
+
+/* Watch: single column */
+.layout-watch .grid-adaptive {
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+
+/* Hide on specific devices */
+.hide-on-phone {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .hide-on-phone {
+    display: block !important;
+  }
+}
+
+.hide-on-tablet {
+  @media (min-width: 768px) and (max-width: 1023px) {
+    display: none !important;
+  }
+}
+
+.hide-on-watch {
+  .layout-watch & {
+    display: none !important;
+  }
+}
+
+.hide-on-desktop {
+  @media (min-width: 1024px) {
+    display: none !important;
+  }
+}
+
+/* Show only on specific devices */
+.show-on-phone-only {
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+}
+
+.show-on-tablet-only {
+  display: none !important;
+  
+  @media (min-width: 768px) and (max-width: 1023px) {
+    display: block !important;
+  }
+}
+
+.show-on-watch-only {
+  display: none !important;
+  
+  .layout-watch & {
+    display: block !important;
+  }
+}
+
+/* ===================================
+   DEVICE-SPECIFIC OVERRIDES
+   =================================== */
+
+/* iPad Pro specific */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .ipad-pro-layout {
+    --content-max-width: 100%;
+  }
+}
+
+/* Apple Watch complications */
+.watch-complication {
+  display: none;
+  
+  .layout-watch.platform-ios & {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+  }
+}
+
+/* Wear OS tiles */
+.wear-tile {
+  display: none;
+  
+  .layout-watch.platform-android & {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 16px;
+  }
+}

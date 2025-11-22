@@ -1,0 +1,498 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Safe Area Support (iOS & Android) */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+  --safe-area-inset-right: env(safe-area-inset-right);
+  
+  /* Android-specific: ensure minimum touch target size (48dp = 48px) */
+  --min-touch-target: 48px;
+}
+
+.safe-area-inset {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.pt-safe {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.pl-safe {
+  padding-left: max(1rem, env(safe-area-inset-left));
+}
+
+.pr-safe {
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* Glassmorphism-Ready Backgrounds */
+body {
+  background: linear-gradient(135deg, 
+    #667eea 0%, 
+    #764ba2 25%, 
+    #f093fb 50%, 
+    #4facfe 75%, 
+    #00f2fe 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+  min-height: 100vh;
+}
+
+.dark body {
+  background: linear-gradient(135deg,
+    #0f172a 0%,
+    #1e1b4b 25%,
+    #312e81 50%,
+    #1e3a8a 75%,
+    #0c4a6e 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Dark mode support - Pure Black Theme */
+.dark {
+  color: #ffffff;
+}
+
+/* Background colors - All black */
+.dark .bg-white {
+  background-color: #000000 !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: #000000 !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: #000000 !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: #000000 !important;
+}
+
+/* Text colors */
+.dark .text-gray-900 {
+  color: #ffffff !important;
+}
+
+.dark .text-gray-800 {
+  color: #f5f5f5 !important;
+}
+
+.dark .text-gray-700 {
+  color: #e5e5e5 !important;
+}
+
+.dark .text-gray-600 {
+  color: #a3a3a3 !important;
+}
+
+.dark .text-gray-500 {
+  color: #737373 !important;
+}
+
+.dark .text-gray-400 {
+  color: #525252 !important;
+}
+
+.dark .text-gray-300 {
+  color: #404040 !important;
+}
+
+/* Border colors - Subtle gray borders only */
+.dark .border-gray-200 {
+  border-color: #1a1a1a !important;
+}
+
+.dark .border-gray-300 {
+  border-color: #1a1a1a !important;
+}
+
+.dark .divide-gray-200 > * + * {
+  border-color: #1a1a1a !important;
+}
+
+/* Component styles - All black backgrounds */
+.dark .card {
+  background-color: #000000 !important;
+  border-color: #1a1a1a !important;
+}
+
+.dark .input-field,
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="search"],
+.dark textarea {
+  background-color: #000000 !important;
+  border-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+.dark .input-field::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #737373 !important;
+}
+
+.dark .btn-secondary {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #1a1a1a !important;
+}
+
+.dark .btn-secondary:hover {
+  background-color: #0a0a0a !important;
+}
+
+.dark .btn-ghost {
+  color: #e5e5e5 !important;
+}
+
+.dark .btn-ghost:hover {
+  background-color: #0a0a0a !important;
+}
+
+/* Headers and navigation - All black */
+.dark header {
+  background-color: #000000 !important;
+  border-color: #1a1a1a !important;
+}
+
+.dark nav {
+  background-color: #000000 !important;
+  border-color: #1a1a1a !important;
+}
+
+/* Hover states - Very subtle hover */
+.dark .hover\:bg-gray-50:hover {
+  background-color: #0a0a0a !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: #0a0a0a !important;
+}
+
+.dark .hover\:bg-gray-200:hover {
+  background-color: #0a0a0a !important;
+}
+
+.dark .hover\:text-gray-600:hover {
+  color: #ffffff !important;
+}
+
+.dark .hover\:text-gray-700:hover {
+  color: #ffffff !important;
+}
+
+.dark .hover\:text-gray-900:hover {
+  color: #ffffff !important;
+}
+
+/* Gradients */
+.dark .bg-gradient-to-br {
+  background: #000000 !important;
+}
+
+.dark .bg-gradient-to-t {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent) !important;
+}
+
+/* Modals and overlays */
+.dark .bg-black\/50 {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.dark .bg-black\/60 {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Active states */
+.dark .active-tab {
+  color: #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
+/* Shadow adjustments for dark mode */
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .shadow {
+  box-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1);
+}
+
+/* Logo white in dark mode */
+.dark img[src="/plated-logo.png"] {
+  filter: brightness(0) invert(1);
+}
+
+/* Notification page - unread items */
+.dark .bg-blue-50 {
+  background-color: #000000 !important;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+  
+  * {
+    @apply border-gray-200;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-gray-900 font-medium px-6 py-2.5 rounded-lg border border-gray-300 transition-colors duration-200;
+  }
+  
+  .btn-ghost {
+    @apply hover:bg-gray-100 text-gray-700 font-medium px-4 py-2 rounded-lg transition-colors duration-200;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200;
+  }
+  
+  .story-ring {
+    @apply rounded-full p-0.5 bg-gradient-to-tr from-primary-400 via-primary-600 to-purple-600;
+  }
+  
+  .active-tab {
+    @apply text-primary-600 border-b-2 border-primary-600;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background-color: #000000;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #333333;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #404040;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+/* Logo animation - Bold entrance with scale pop */
+@keyframes bold-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  65% {
+    transform: scale(0.9);
+  }
+  80% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-scale {
+  animation: bold-entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-origin: center;
+}
+
+/* Modal animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hide scrollbar for stories */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Utility for hiding scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Scale-in animation for modals and popups */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glowing animation for AI button */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5),
+                0 0 40px rgba(168, 85, 247, 0.3),
+                0 0 60px rgba(168, 85, 247, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.8),
+                0 0 60px rgba(168, 85, 247, 0.5),
+                0 0 90px rgba(168, 85, 247, 0.3);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Orbit animations for AI assistant particles */
+.animate-spin-slow {
+  animation: spin 8s linear infinite;
+}
+
+.animate-spin-slower {
+  animation: spin 12s linear infinite;
+}
+
+.animate-spin-medium {
+  animation: spin 6s linear infinite;
+}
+
+.animate-spin-fast {
+  animation: spin 4s linear infinite;
+}
+
+/* Waveform animation for AI listening state */
+@keyframes wave {
+  0%, 100% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(2);
+  }
+}

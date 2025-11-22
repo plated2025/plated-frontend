@@ -1,0 +1,224 @@
+/* ===================================
+   MOBILE OPTIMIZATIONS
+   =================================== */
+
+/* Safe Area Support for Notched Devices (iPhone X+, etc.) */
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+}
+
+/* Apply safe areas to body */
+body {
+  padding-top: var(--safe-area-top);
+  padding-bottom: var(--safe-area-bottom);
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+}
+
+/* Prevent Overscroll Bounce on iOS */
+body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Disable Text Selection (except inputs) */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Allow text selection in inputs and textareas */
+input, 
+textarea, 
+[contenteditable] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Remove tap highlight on buttons */
+button, 
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth Scrolling */
+* {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Hide Scrollbars (but keep functionality) */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Prevent Zoom on Input Focus (iOS) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+  font-size: 16px !important; /* iOS won't zoom if font-size >= 16px */
+}
+
+/* Remove iOS Input Shadow */
+input,
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Better Touch Targets (44x44px minimum) */
+button,
+a,
+input[type="checkbox"],
+input[type="radio"] {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Pull-to-Refresh Indicator */
+.ptr-indicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: transform 0.3s ease;
+}
+
+.ptr-indicator.pulling {
+  transform: translateX(-50%) translateY(var(--pull-distance, 0));
+}
+
+.ptr-indicator.refreshing {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to { transform: translateX(-50%) rotate(360deg); }
+}
+
+/* Touch Feedback */
+.touchable {
+  transition: opacity 0.1s, transform 0.1s;
+}
+
+.touchable:active {
+  opacity: 0.7;
+  transform: scale(0.98);
+}
+
+/* Optimized Images */
+img {
+  -webkit-touch-callout: none;
+  pointer-events: none;
+}
+
+/* Better Viewport for Mobile */
+@supports (-webkit-touch-callout: none) {
+  /* iOS specific */
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Landscape Mode Adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Adjust header/footer heights in landscape */
+  header {
+    padding: 0.5rem !important;
+  }
+}
+
+/* Full Screen Mode */
+.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+}
+
+/* Disable Callout on Long Press (iOS) */
+* {
+  -webkit-touch-callout: none;
+}
+
+/* Prevent Text Size Adjustment */
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Loading Spinner for Capacitor */
+.capacitor-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 99999;
+}
+
+.capacitor-loading .spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Status Bar Spacing */
+.status-bar-safe {
+  padding-top: var(--safe-area-top);
+}
+
+/* Bottom Safe Area for Tab Bars */
+.bottom-bar-safe {
+  padding-bottom: calc(var(--safe-area-bottom) + 60px);
+}
+
+/* Native Feel Animations */
+.native-transition {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Haptic Feedback Class */
+.haptic-enabled {
+  cursor: pointer;
+}
+
+/* Optimize for 60fps */
+.smooth-transform {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
