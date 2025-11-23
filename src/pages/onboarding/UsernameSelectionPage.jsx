@@ -19,7 +19,8 @@ function UsernameSelectionPage() {
         setChecking(true)
         setError('')
         try {
-          const response = await fetch(`http://localhost:5000/api/auth/check-username/${username}`)
+          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+          const response = await fetch(`${API_URL}/auth/check-username/${username}`)
           const data = await response.json()
           setAvailable(data.available)
           if (!data.available) {
@@ -51,8 +52,9 @@ function UsernameSelectionPage() {
 
     setLoading(true)
     try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:5000/api/users/profile', {
+      const response = await fetch(`${API_URL}/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
