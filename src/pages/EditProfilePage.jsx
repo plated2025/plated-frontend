@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Camera } from 'lucide-react'
+import { ArrowLeft, Camera, Check, X, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 function EditProfilePage() {
@@ -8,16 +8,79 @@ function EditProfilePage() {
   const { currentUser, updateUser } = useApp()
   const [formData, setFormData] = useState({
     name: currentUser?.name || '',
+    username: currentUser?.username || '',
     bio: currentUser?.bio || '',
     website: currentUser?.website || '',
     location: currentUser?.location || '',
     specialty: currentUser?.specialty || ''
   })
+  const [usernameAvailable, setUsernameAvailable] = useState(null)
+  const [checkingUsername, setCheckingUsername] = useState(false)
+  const [usernameError, setUsernameError] = useState('')
 
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    
+    // Reset username validation when user types
+    if (name === 'username') {
+      setUsernameAvailable(null)
+      setUsernameError('')
+    }
   }
+
+  // Check username availability
+  useEffect(() => {
+    const checkUsername = async () => {
+      const username = formData.username.trim().toLowerCase()
+      
+      // Skip if username hasn't changed
+      if (username === currentUser?.username?.toLowerCase()) {
+        setUsernameAvailable(true)
+        setUsernameError('')
+        return
+      }
+      
+      if (username.length < 3) {
+        setUsernameError('Username must be at least 3 characters')
+        setUsernameAvailable(false)
+        return
+      }
+      
+      if (!/^[a-z0-9_]+$/.test(username)) {
+        setUsernameError('Username can only contain letters, numbers, and underscores')
+        setUsernameAvailable(false)
+        return
+      }
+      
+      setCheckingUsername(true)
+      setUsernameError('')
+      
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+        const response = await fetch(`${API_URL}/auth/check-username/${username}`)
+        const data = await response.json()
+        
+        setUsernameAvailable(data.available)
+        if (!data.available) {
+          setUsernameError('Username is already taken')
+        }
+      } catch (error) {
+        console.error('Error checking username:', error)
+        setUsernameError('Error checking username')
+      } finally {
+        setCheckingUsername(false)
+      }
+    }
+    
+    const timeoutId = setTimeout(() => {
+      if (formData.username && formData.username.length >= 3) {
+        checkUsername()
+      }
+    }, 500)
+    
+    return () => clearTimeout(timeoutId)
+  }, [formData.username, currentUser?.username])
 
   const handleSave = () => {
     updateUser(formData)
@@ -67,6 +130,36 @@ function EditProfilePage() {
               onChange={handleChange}
               className="input-field"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <div className="relative">
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="input-field pr-10"
+                placeholder="your_username"
+              />
+              {/* Status Icon */}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {checkingUsername && <Loader2 size={20} className="text-gray-400 animate-spin" />}
+                {!checkingUsername && usernameAvailable === true && (
+                  <Check size={20} className="text-green-500" />
+                )}
+                {!checkingUsername && usernameAvailable === false && (
+                  <X size={20} className="text-red-500" />
+                )}
+              </div>
+            </div>
+            {usernameError && (
+              <p className="text-xs text-red-500 mt-1">{usernameError}</p>
+            )}
+            {usernameAvailable === true && formData.username !== currentUser?.username && (
+              <p className="text-xs text-green-500 mt-1">Username is available!</p>
+            )}
           </div>
 
           <div>
