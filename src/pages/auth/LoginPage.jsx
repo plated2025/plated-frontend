@@ -49,7 +49,8 @@ function LoginPage() {
   const handleSocialLogin = (provider) => {
     if (provider === 'google') {
       // Redirect to backend Google OAuth
-      window.location.href = 'http://localhost:5000/api/auth/google'
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+      window.location.href = `${API_URL}/auth/google`
     } else if (provider === 'apple') {
       // Apple Sign-In coming soon
       alert('Apple Sign-In is coming soon! For now, please use Google or email login.')
