@@ -129,24 +129,49 @@ function HomePage() {
               <div className="flex justify-center items-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
               </div>
+            ) : posts.length > 0 ? (
+              <>
+                <div className="glass-card lg:overflow-hidden">
+                  {posts.map(recipe => (
+                    <PostCard key={recipe.id} recipe={recipe} />
+                  ))}
+                </div>
+                {/* Pull to Refresh Text */}
+                <div className="text-center py-8 text-gray-500">
+                  <p className="text-sm">You're all caught up! 🎉</p>
+                  <button
+                    onClick={handleRefresh}
+                    className="text-primary-600 hover:text-primary-700 text-sm font-medium mt-2"
+                  >
+                    Refresh Feed
+                  </button>
+                </div>
+              </>
             ) : (
-              <div className="glass-card lg:overflow-hidden">
-                {posts.map(recipe => (
-                  <PostCard key={recipe.id} recipe={recipe} />
-                ))}
-              </div>
-            )}
-
-            {/* Pull to Refresh Text */}
-            {!isLoading && (
-              <div className="text-center py-8 text-gray-500">
-                <p className="text-sm">You're all caught up! 🎉</p>
-                <button
-                  onClick={handleRefresh}
-                  className="text-primary-600 hover:text-primary-700 text-sm font-medium mt-2"
-                >
-                  Refresh Feed
-                </button>
+              <div className="glass-card p-12 text-center">
+                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center">
+                  <Sparkles size={48} className="text-primary-600 dark:text-primary-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                  Your Feed is Ready!
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                  Start exploring delicious recipes or create your own. Follow creators to see their content here.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => navigate('/explore')}
+                    className="btn-primary"
+                  >
+                    Explore Recipes
+                  </button>
+                  <button
+                    onClick={() => navigate('/create')}
+                    className="px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-xl font-semibold transition-all"
+                  >
+                    Create Recipe
+                  </button>
+                </div>
               </div>
             )}
           </div>

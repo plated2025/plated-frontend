@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Camera, Check, X, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { userAPI } from '../services/api'
 
 function EditProfilePage() {
   const navigate = useNavigate()
@@ -17,6 +18,8 @@ function EditProfilePage() {
   const [usernameAvailable, setUsernameAvailable] = useState(null)
   const [checkingUsername, setCheckingUsername] = useState(false)
   const [usernameError, setUsernameError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -82,9 +85,36 @@ function EditProfilePage() {
     return () => clearTimeout(timeoutId)
   }, [formData.username, currentUser?.username])
 
-  const handleSave = () => {
-    updateUser(formData)
-    navigate('/profile')
+  const handleSave = async () => {
+    // Don't save if username is invalid
+    if (usernameAvailable === false) {
+      setSaveError('Please fix the username error before saving')
+      return
+    }
+
+    setIsSaving(true)
+    setSaveError('')
+
+    try {
+      const response = await userAPI.updateProfile({
+        fullName: formData.name,
+        username: formData.username,
+        bio: formData.bio,
+        website: formData.website,
+        location: formData.location,
+        specialty: formData.specialty
+      })
+
+      // Update local user state
+      updateUser(response.data)
+      
+      // Navigate back to profile
+      navigate('/profile')
+    } catch (error) {
+      console.error('Error saving profile:', error)
+      setSaveError(error.response?.data?.message || 'Failed to update profile. Please try again.')
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -98,8 +128,12 @@ function EditProfilePage() {
             </button>
             <h1 className="text-xl font-bold">Edit Profile</h1>
           </div>
-          <button onClick={handleSave} className="text-primary-600 hover:text-primary-700 font-medium">
-            Save
+          <button 
+            onClick={handleSave} 
+            disabled={isSaving}
+            className="text-primary-600 hover:text-primary-700 font-medium disabled:opacity-50"
+          >
+            {isSaving ? 'Saving...' : 'Save'}
           </button>
         </div>
       </header>
@@ -118,6 +152,13 @@ function EditProfilePage() {
             </button>
           </div>
         </div>
+
+        {/* Error Message */}
+        {saveError && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {saveError}
+          </div>
+        )}
 
         {/* Form */}
         <div className="space-y-4">
