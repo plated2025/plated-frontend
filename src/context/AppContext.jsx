@@ -27,12 +27,39 @@ export const AppProvider = ({ children }) => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token')
       const savedTheme = localStorage.getItem('theme')
+      const savedUser = localStorage.getItem('currentUser')
+      const savedOnboardingComplete = localStorage.getItem('hasCompletedOnboarding')
+      const savedUserType = localStorage.getItem('userType')
+      const savedUserTypeSelected = localStorage.getItem('hasSelectedUserType')
       
       if (savedTheme) setTheme(savedTheme)
       
       if (token) {
+        // Load saved values immediately (for instant UI)
+        if (savedUser) {
+          try {
+            const user = JSON.parse(savedUser)
+            setCurrentUser(user)
+            setIsAuthenticated(true)
+          } catch (e) {
+            console.error('Failed to parse saved user:', e)
+          }
+        }
+        
+        if (savedOnboardingComplete === 'true') {
+          setHasCompletedOnboarding(true)
+        }
+        
+        if (savedUserType) {
+          setUserType(savedUserType)
+        }
+        
+        if (savedUserTypeSelected === 'true') {
+          setHasSelectedUserType(true)
+        }
+        
+        // Then verify with backend (silently update if needed)
         try {
-          // Fetch user from backend
           const response = await authAPI.getMe()
           const user = response.data
           
@@ -41,11 +68,32 @@ export const AppProvider = ({ children }) => {
           setUserType(user.userType)
           setHasCompletedOnboarding(user.hasCompletedOnboarding)
           setHasSelectedUserType(user.hasSelectedUserType)
+          
+          // Update localStorage with fresh data
+          localStorage.setItem('currentUser', JSON.stringify(user))
+          if (user.hasCompletedOnboarding) {
+            localStorage.setItem('hasCompletedOnboarding', 'true')
+          }
+          if (user.userType) {
+            localStorage.setItem('userType', user.userType)
+            localStorage.setItem('hasSelectedUserType', 'true')
+          }
         } catch (error) {
           console.error('Auth check failed:', error)
-          // Clear invalid token
-          localStorage.removeItem('token')
-          setIsAuthenticated(false)
+          // Only clear if it's an auth error (401), not network issues
+          if (error.response && error.response.status === 401) {
+            localStorage.removeItem('token')
+            localStorage.removeItem('currentUser')
+            localStorage.removeItem('hasCompletedOnboarding')
+            localStorage.removeItem('userType')
+            localStorage.removeItem('hasSelectedUserType')
+            setIsAuthenticated(false)
+            setCurrentUser(null)
+            setHasCompletedOnboarding(false)
+            setHasSelectedUserType(false)
+            setUserType(null)
+          }
+          // Otherwise keep the cached values and let user continue
         }
       }
       
