@@ -82,8 +82,8 @@ function WelcomePage() {
       <div className="relative z-10 max-w-md w-full pt-safe pb-safe">
         {/* Logo - Centered with Animation */}
         <div className={`text-center mb-8 sm:mb-12 transition-all duration-1000 ${showLogo ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}`}>
-          <div className="inline-flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6 transform hover:scale-105 transition-transform duration-300">
-            <div className="relative">
+          <div className="flex items-center justify-center mb-4 sm:mb-6">
+            <div className="relative inline-flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
               {/* Glow effect behind logo */}
               <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full animate-pulse-slow" />
               <img 
@@ -91,10 +91,11 @@ function WelcomePage() {
                 alt="Plated" 
                 className="relative h-24 sm:h-28 w-auto drop-shadow-2xl filter brightness-0 invert animate-float-gentle"
               />
+              {/* BETA badge positioned closer to logo */}
+              <span className="absolute -top-2 -right-12 bg-white/20 backdrop-blur-md text-white text-xs font-bold px-2 py-0.5 rounded-full border border-white/30 shadow-lg animate-pulse-slow">
+                BETA
+              </span>
             </div>
-            <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/30 shadow-lg animate-pulse-slow">
-              BETA
-            </span>
           </div>
           <p className="text-purple-100 text-base sm:text-lg font-medium tracking-wide animate-fade-in-delayed">
             Cook. Share. Inspire.
