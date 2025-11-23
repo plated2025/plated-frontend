@@ -5,6 +5,18 @@ import { ChefHat, Heart, Users, Sparkles, TrendingUp, Calendar, ArrowRight } fro
 function WelcomePage() {
   const navigate = useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [showContent, setShowContent] = useState(false)
+  const [showLogo, setShowLogo] = useState(false)
+
+  // Animate logo first, then content
+  useEffect(() => {
+    const logoTimer = setTimeout(() => setShowLogo(true), 300)
+    const contentTimer = setTimeout(() => setShowContent(true), 1200)
+    return () => {
+      clearTimeout(logoTimer)
+      clearTimeout(contentTimer)
+    }
+  }, [])
 
   const slides = [
     {
@@ -52,35 +64,45 @@ function WelcomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden safe-area-inset">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-900 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden safe-area-inset">
+      {/* Glowing Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-400/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse delay-700" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-300/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        {/* Large glowing orbs */}
+        <div className="absolute -top-20 -left-20 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-[120px] opacity-40 animate-pulse-slow" />
+        <div className="absolute -bottom-20 -right-20 w-[500px] h-[500px] bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full blur-[140px] opacity-30 animate-pulse-slower" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full blur-[160px] opacity-20 animate-glow" />
+        
+        {/* Moving particles */}
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-float" />
+        <div className="absolute top-3/4 right-1/4 w-40 h-40 bg-purple-300/10 rounded-full blur-2xl animate-float-delayed" />
+        <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-pink-400/10 rounded-full blur-xl animate-float-slow" />
       </div>
 
       {/* Content Container */}
       <div className="relative z-10 max-w-md w-full pt-safe pb-safe">
-        {/* Logo */}
-        <div className="text-center mb-8 sm:mb-12 animate-fade-in">
-          <div className="inline-flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <img 
-              src="/plated-logo.png" 
-              alt="Plated" 
-              className="h-20 sm:h-24 w-auto drop-shadow-2xl filter brightness-0 invert"
-            />
-            <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/30 shadow-lg">
+        {/* Logo - Centered with Animation */}
+        <div className={`text-center mb-8 sm:mb-12 transition-all duration-1000 ${showLogo ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}`}>
+          <div className="inline-flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6 transform hover:scale-105 transition-transform duration-300">
+            <div className="relative">
+              {/* Glow effect behind logo */}
+              <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full animate-pulse-slow" />
+              <img 
+                src="/plated-logo.png" 
+                alt="Plated" 
+                className="relative h-24 sm:h-28 w-auto drop-shadow-2xl filter brightness-0 invert animate-float-gentle"
+              />
+            </div>
+            <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/30 shadow-lg animate-pulse-slow">
               BETA
             </span>
           </div>
-          <p className="text-purple-200 text-base sm:text-lg font-medium">
+          <p className="text-purple-100 text-base sm:text-lg font-medium tracking-wide animate-fade-in-delayed">
             Cook. Share. Inspire.
           </p>
         </div>
 
         {/* Slide Content with Animation */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 mb-6 sm:mb-8 border border-white/20 shadow-2xl min-h-[280px] sm:min-h-[320px] flex flex-col items-center justify-center transition-all duration-500">
+        <div className={`bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 mb-6 sm:mb-8 border border-white/20 shadow-2xl min-h-[280px] sm:min-h-[320px] flex flex-col items-center justify-center transition-all duration-700 ${showContent ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           {slides.map((slide, index) => (
             <div
               key={index}
@@ -123,7 +145,7 @@ function WelcomePage() {
         </div>
 
         {/* Slide Indicators */}
-        <div className="flex items-center justify-center gap-2 mb-6 sm:mb-8">
+        <div className={`flex items-center justify-center gap-2 mb-6 sm:mb-8 transition-all duration-700 delay-300 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           {slides.map((_, index) => (
             <button
               key={index}
@@ -140,14 +162,14 @@ function WelcomePage() {
         {/* Get Started Button */}
         <button
           onClick={() => handleNavigate('/signup')}
-          className="w-full bg-white hover:bg-gray-100 text-purple-700 font-bold py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group text-base sm:text-lg"
+          className={`w-full bg-white hover:bg-gray-100 text-purple-700 font-bold py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-2xl transition-all duration-700 delay-500 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group text-base sm:text-lg ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
         >
           Get Started
           <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
         </button>
 
         {/* Already have account */}
-        <div className="text-center mt-4 sm:mt-6">
+        <div className={`text-center mt-4 sm:mt-6 transition-all duration-700 delay-700 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <button
             onClick={() => handleNavigate('/login')}
             className="text-white/90 hover:text-white font-medium transition-colors text-sm sm:text-base"
