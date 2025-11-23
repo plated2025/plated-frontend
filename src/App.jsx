@@ -117,42 +117,44 @@ function App() {
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/welcome" element={!isAuthenticated ? <WelcomePage /> : <Navigate to="/" />} />
-        <Route path="/signup" element={!isAuthenticated ? <SignUpPage /> : <Navigate to="/" />} />
-        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
+        <Route path="/welcome" element={!isAuthenticated ? <WelcomePage /> : <Navigate to="/home" />} />
+        <Route path="/signup" element={!isAuthenticated ? <SignUpPage /> : <Navigate to="/home" />} />
+        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/home" />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+        
+        {/* Root redirect - first time visitors go to welcome */}
+        <Route path="/" element={<Navigate to={isAuthenticated ? "/home" : "/welcome"} />} />
         
         {/* Onboarding Routes */}
         <Route 
           path="/onboarding/username" 
-          element={isAuthenticated && !hasCompletedOnboarding ? <UsernameSelectionPage /> : <Navigate to="/" />} 
+          element={isAuthenticated && !hasCompletedOnboarding ? <UsernameSelectionPage /> : <Navigate to="/home" />} 
         />
         <Route 
           path="/onboarding/user-type" 
-          element={isAuthenticated && !hasCompletedOnboarding ? <UserTypeSelectionPage /> : <Navigate to="/" />} 
+          element={isAuthenticated && !hasCompletedOnboarding ? <UserTypeSelectionPage /> : <Navigate to="/home" />} 
         />
         <Route 
           path="/onboarding/interests" 
-          element={isAuthenticated && !hasCompletedOnboarding ? <InterestsPage /> : <Navigate to="/" />} 
+          element={isAuthenticated && !hasCompletedOnboarding ? <InterestsPage /> : <Navigate to="/home" />} 
         />
         <Route 
           path="/onboarding/creators" 
-          element={isAuthenticated && !hasCompletedOnboarding ? <SuggestedCreatorsPage /> : <Navigate to="/" />} 
+          element={isAuthenticated && !hasCompletedOnboarding ? <SuggestedCreatorsPage /> : <Navigate to="/home" />} 
         />
         <Route 
           path="/onboarding/tutorial" 
-          element={isAuthenticated && !hasCompletedOnboarding ? <TutorialPage /> : <Navigate to="/" />} 
+          element={isAuthenticated && !hasCompletedOnboarding ? <TutorialPage /> : <Navigate to="/home" />} 
         />
         <Route 
           path="/onboarding/achievements" 
-          element={isAuthenticated && !hasCompletedOnboarding ? <AchievementTutorialPage /> : <Navigate to="/" />} 
+          element={isAuthenticated && !hasCompletedOnboarding ? <AchievementTutorialPage /> : <Navigate to="/home" />} 
         />
         
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/welcome" />} />
             <Route path="/home" element={<HomePage />} />
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/create" element={<CreatePage />} />
