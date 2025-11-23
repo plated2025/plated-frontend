@@ -109,8 +109,20 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('isAuthenticated', 'true')
     localStorage.setItem('currentUser', JSON.stringify(user))
     
-    // For new signups, ensure onboarding starts fresh
-    if (!skipOnboarding) {
+    // For existing users, set onboarding status from user data
+    if (skipOnboarding || user.hasCompletedOnboarding) {
+      setHasCompletedOnboarding(true)
+      localStorage.setItem('hasCompletedOnboarding', 'true')
+      
+      // Also set user type if available
+      if (user.userType) {
+        setUserType(user.userType)
+        setHasSelectedUserType(true)
+        localStorage.setItem('userType', user.userType)
+        localStorage.setItem('hasSelectedUserType', 'true')
+      }
+    } else {
+      // For new signups, ensure onboarding starts fresh
       setHasCompletedOnboarding(false)
       localStorage.removeItem('hasCompletedOnboarding')
     }
