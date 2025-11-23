@@ -66,9 +66,7 @@ function SettingsPage() {
           label: 'Chat with AI Assistant', 
           action: () => setShowAIAssistant(true),
           highlight: true
-        },
-        { icon: MessageCircle, label: 'AI Chat History', action: () => alert('AI Chat History - Coming Soon!') },
-        { icon: Volume2, label: 'Voice Settings', action: () => alert('Voice Settings - Coming Soon!') }
+        }
       ]
     },
     // Creator-only section
@@ -76,8 +74,7 @@ function SettingsPage() {
       title: 'Creator Tools',
       items: [
         { icon: BarChart3, label: 'Creator Studio', action: () => navigate('/creator-studio') },
-        { icon: Award, label: 'Achievements', action: () => navigate('/achievements') },
-        { icon: CreditCard, label: 'Monetization', action: () => alert('Monetization - Coming Soon!') }
+        { icon: Award, label: 'Achievements', action: () => navigate('/achievements') }
       ]
     }] : []),
     {
@@ -140,14 +137,17 @@ function SettingsPage() {
   ]
 
   return (
-    <div className="min-h-screen pb-safe">
+    <div className="min-h-screen bg-gray-50 pb-safe">
       {/* Header */}
-      <header className="glass-nav sticky top-0 z-10 pt-safe">
-        <div className="flex items-center gap-2 sm:gap-3 px-4 py-2.5 sm:py-3">
-          <button onClick={() => navigate(-1)}>
-            <ArrowLeft size={24} />
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10 pt-safe">
+        <div className="flex items-center gap-2 sm:gap-3 px-4 py-3">
+          <button 
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <ArrowLeft size={24} className="text-gray-700" />
           </button>
-          <h1 className="text-xl font-bold">Settings</h1>
+          <h1 className="text-xl font-bold text-gray-900">Settings</h1>
         </div>
       </header>
 
@@ -158,7 +158,7 @@ function SettingsPage() {
             <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">
               {section.title}
             </h2>
-            <div className="glass-card divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="bg-white border-y border-gray-200 divide-y divide-gray-100">
               {section.items.map((item, itemIdx) => (
                 <button
                   key={itemIdx}
