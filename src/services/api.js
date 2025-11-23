@@ -566,6 +566,37 @@ export const securityAPI = {
   },
 };
 
+// AI API (Gemini)
+export const aiAPI = {
+  generateRecipes: async (ingredients) => {
+    return await apiRequest('/ai/generate-recipes', {
+      method: 'POST',
+      body: JSON.stringify({ ingredients }),
+    });
+  },
+
+  scanFood: async (imageBase64) => {
+    return await apiRequest('/ai/scan-food', {
+      method: 'POST',
+      body: JSON.stringify({ image: imageBase64 }),
+    });
+  },
+
+  analyzeProduct: async (imageBase64) => {
+    return await apiRequest('/ai/analyze-product', {
+      method: 'POST',
+      body: JSON.stringify({ image: imageBase64 }),
+    });
+  },
+
+  getCookingAdvice: async (query) => {
+    return await apiRequest('/ai/cooking-advice', {
+      method: 'POST',
+      body: JSON.stringify({ query }),
+    });
+  },
+};
+
 export default {
   authAPI,
   recipeAPI,
@@ -578,4 +609,5 @@ export default {
   subscriptionsAPI,
   recipeAdvancedAPI,
   securityAPI,
+  aiAPI,
 };

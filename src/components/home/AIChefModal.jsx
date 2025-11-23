@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X, Plus, Sparkles, ChefHat, Loader2, ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import Portal from '../common/Portal'
+import { aiAPI } from '../../services/api'
 
 function AIChefModal({ onClose }) {
   const navigate = useNavigate()
@@ -9,6 +10,7 @@ function AIChefModal({ onClose }) {
   const [inputValue, setInputValue] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [suggestions, setSuggestions] = useState([])
+  const [error, setError] = useState('')
 
   const commonIngredients = [
     '🍗 Chicken', '🥩 Beef', '🐟 Fish', '🥚 Eggs', '🍅 Tomatoes',
@@ -27,23 +29,30 @@ function AIChefModal({ onClose }) {
     setIngredients(ingredients.filter(i => i !== ingredient))
   }
 
-  const generateRecipes = () => {
+  const generateRecipes = async () => {
     if (ingredients.length === 0) {
-      alert('Please add at least one ingredient')
+      setError('Please add at least one ingredient')
       return
     }
 
     setIsGenerating(true)
+    setError('')
+    setSuggestions([])
     
-    // Simulate AI generation
-    setTimeout(() => {
+    try {
+      // Call real Gemini AI API
+      const response = await aiAPI.generateRecipes(ingredients)
+      setSuggestions(response.data || [])
+    } catch (err) {
+      console.error('AI Generation Error:', err)
+      setError('Failed to generate recipes. Please try again.')
+      // Fallback to sample data if API fails
       setSuggestions([
-        { name: 'AI-Generated Fusion Bowl', time: '25min', difficulty: 'Easy' },
-        { name: 'Creative Stir-Fry', time: '20min', difficulty: 'Medium' },
-        { name: 'Gourmet Comfort Food', time: '35min', difficulty: 'Easy' }
+        { name: 'Unable to connect to AI', time: '-', difficulty: 'Easy', description: 'Please check your connection' }
       ])
+    } finally {
       setIsGenerating(false)
-    }, 2000)
+    }
   }
 
   return (
@@ -136,6 +145,13 @@ function AIChefModal({ onClose }) {
             </div>
           )}
 
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
           {/* AI Suggestions */}
           {suggestions.length > 0 && (
             <div className="mb-6">
@@ -161,6 +177,11 @@ function AIChefModal({ onClose }) {
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {recipe.time} • {recipe.difficulty}
                         </p>
+                        {recipe.description && (
+                          <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                            {recipe.description}
+                          </p>
+                        )}
                       </div>
                       <ArrowRight className="text-purple-600 group-hover:translate-x-1 transition-transform" />
                     </div>

@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react'
 import { X, Camera, Upload, Scan, Sparkles, Loader2, AlertTriangle, CheckCircle, XCircle, Info, TrendingUp, TrendingDown, Shield } from 'lucide-react'
 import Portal from '../common/Portal'
+import { aiAPI } from '../../services/api'
 
 function ProductAnalyzerModal({ onClose }) {
   const fileInputRef = useRef(null)
   const [image, setImage] = useState(null)
   const [isScanning, setIsScanning] = useState(false)
   const [analysis, setAnalysis] = useState(null)
+  const [error, setError] = useState('')
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0]
@@ -20,70 +22,21 @@ function ProductAnalyzerModal({ onClose }) {
     }
   }
 
-  const scanProduct = () => {
+  const scanProduct = async () => {
     setIsScanning(true)
+    setError('')
     
-    // Simulate AI scanning and analysis
-    setTimeout(() => {
-      setAnalysis({
-        productName: 'Organic Protein Bar - Chocolate Chip',
-        brand: 'HealthyBites',
-        barcode: '7 89012 34567 8',
-        healthScore: 72, // Out of 100
-        servingSize: '50g',
-        calories: 210,
-        nutritionGrade: 'B', // A-E scale
-        
-        macros: {
-          protein: { amount: 12, unit: 'g', daily: 24 },
-          carbs: { amount: 25, unit: 'g', daily: 8 },
-          fat: { amount: 8, unit: 'g', daily: 12 },
-          fiber: { amount: 5, unit: 'g', daily: 20 },
-          sugar: { amount: 10, unit: 'g', daily: 11 }
-        },
-        
-        ingredients: [
-          { name: 'Organic Oats', status: 'good' },
-          { name: 'Whey Protein Isolate', status: 'good' },
-          { name: 'Dark Chocolate Chips', status: 'moderate' },
-          { name: 'Honey', status: 'moderate' },
-          { name: 'Palm Oil', status: 'warning' },
-          { name: 'Natural Flavors', status: 'moderate' }
-        ],
-        
-        positives: [
-          'High in protein (12g)',
-          'Good source of fiber',
-          'Organic ingredients',
-          'No artificial sweeteners',
-          'Gluten-free'
-        ],
-        
-        concerns: [
-          'Contains palm oil',
-          'Moderate sugar content (10g)',
-          'Processed whey protein',
-          'May contain traces of nuts'
-        ],
-        
-        allergens: ['Milk', 'May contain Nuts', 'Soy'],
-        
-        dietaryFit: [
-          { diet: 'High Protein', compatible: true },
-          { diet: 'Vegetarian', compatible: true },
-          { diet: 'Vegan', compatible: false },
-          { diet: 'Keto', compatible: false },
-          { diet: 'Gluten-Free', compatible: true }
-        ],
-        
-        alternatives: [
-          { name: 'Pure Organic Bar', healthScore: 85, price: '$2.99' },
-          { name: 'RxBar Chocolate', healthScore: 78, price: '$2.49' },
-          { name: 'Quest Protein Bar', healthScore: 70, price: '$2.79' }
-        ]
-      })
+    try {
+      // Call real Gemini AI API
+      const response = await aiAPI.analyzeProduct(image)
+      setAnalysis(response.data || null)
+    } catch (err) {
+      console.error('AI Product Analysis Error:', err)
+      setError('Failed to analyze product. Please try again.')
+      setAnalysis(null)
+    } finally {
       setIsScanning(false)
-    }, 3000)
+    }
   }
 
   const getHealthScoreColor = (score) => {
@@ -224,6 +177,13 @@ function ProductAnalyzerModal({ onClose }) {
                   )}
                 </div>
               </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
 
               {/* Scanning Progress */}
               {isScanning && (

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { X, Camera, Upload, Sparkles, Loader2, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import Portal from '../common/Portal'
+import { aiAPI } from '../../services/api'
 
 function FoodScannerModal({ onClose }) {
   const navigate = useNavigate()
@@ -9,6 +10,7 @@ function FoodScannerModal({ onClose }) {
   const [image, setImage] = useState(null)
   const [isScanning, setIsScanning] = useState(false)
   const [results, setResults] = useState(null)
+  const [error, setError] = useState('')
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0]
@@ -22,21 +24,25 @@ function FoodScannerModal({ onClose }) {
     }
   }
 
-  const scanImage = () => {
+  const scanImage = async () => {
     setIsScanning(true)
+    setError('')
     
-    // Simulate AI scanning
-    setTimeout(() => {
+    try {
+      // Call real Gemini AI API
+      const response = await aiAPI.scanFood(image)
+      setResults(response.data || null)
+    } catch (err) {
+      console.error('AI Scan Error:', err)
+      setError('Failed to analyze image. Please try again.')
+      // Fallback data
       setResults({
-        detected: ['Tomatoes', 'Onions', 'Garlic', 'Chicken', 'Olive Oil'],
-        recipes: [
-          { name: 'Classic Chicken Pasta', match: '95%', time: '30min' },
-          { name: 'Garlic Chicken Stir-fry', match: '88%', time: '25min' },
-          { name: 'Mediterranean Bowl', match: '82%', time: '20min' }
-        ]
+        detected: ['Unable to analyze'],
+        recipes: []
       })
+    } finally {
       setIsScanning(false)
-    }, 2500)
+    }
   }
 
   return (
@@ -128,6 +134,13 @@ function FoodScannerModal({ onClose }) {
                   )}
                 </div>
               </div>
+
+              {/* Error Message */}
+              {error && (
+                <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
 
               {/* Scanning Progress */}
               {isScanning && (
