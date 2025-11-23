@@ -11,6 +11,11 @@ function StoryBar() {
     navigate(`/story/${userId}`)
   }
 
+  // Don't render if no stories to show
+  if (!mockStories || mockStories.length === 0) {
+    return null
+  }
+
   return (
     <div className="glass-card shadow-sm lg:shadow-none px-4 py-4 lg:px-6 lg:py-6">
       <div className="flex gap-3 overflow-x-auto hide-scrollbar">
