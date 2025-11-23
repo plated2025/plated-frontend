@@ -16,49 +16,8 @@ function ExplorePage() {
   const [displayCount, setDisplayCount] = useState(20)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
-  // Live cooking sessions
-  const liveSessions = [
-    { 
-      id: 1, 
-      chef: 'Gordon Ramsay', 
-      username: '@gordonramsay',
-      cooking: 'Perfect Steak Masterclass', 
-      viewers: 2341,
-      avatar: 'https://i.pravatar.cc/150?img=1',
-      thumbnail: 'https://images.unsplash.com/photo-1546039907-7fa05f864c02?w=500',
-      duration: '45 min'
-    },
-    { 
-      id: 2, 
-      chef: 'Jamie Oliver', 
-      username: '@jamieoliver',
-      cooking: 'Quick Italian Pasta', 
-      viewers: 1876,
-      avatar: 'https://i.pravatar.cc/150?img=2',
-      thumbnail: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=500',
-      duration: '30 min'
-    },
-    { 
-      id: 3, 
-      chef: 'Yuki Tanaka', 
-      username: '@yukicooks',
-      cooking: 'Traditional Sushi Art', 
-      viewers: 1523,
-      avatar: 'https://i.pravatar.cc/150?img=3',
-      thumbnail: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500',
-      duration: '60 min'
-    },
-    { 
-      id: 4, 
-      chef: 'Maria Garcia', 
-      username: '@mariaskitchen',
-      cooking: 'Authentic Mexican Tacos', 
-      viewers: 1289,
-      avatar: 'https://i.pravatar.cc/150?img=4',
-      thumbnail: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500',
-      duration: '25 min'
-    }
-  ]
+  // Live cooking sessions (empty for production)
+  const liveSessions = []
 
   const toggleFilter = (filterId) => {
     if (filterId === 'all') {
@@ -194,7 +153,8 @@ function ExplorePage() {
         </div>
       </div>
 
-      {/* Reels Section */}
+      {/* Reels Section - Hidden when no recipes */}
+      {mockRecipes && mockRecipes.length > 0 && (
       <div className="glass-card px-4 py-4 mb-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -253,8 +213,10 @@ function ExplorePage() {
           ))}
         </div>
       </div>
+      )}
 
-      {/* Live Cooking Section */}
+      {/* Live Cooking Section - Hidden when no sessions */}
+      {liveSessions && liveSessions.length > 0 && (
       <div className="glass-card px-4 py-4 mb-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -326,6 +288,7 @@ function ExplorePage() {
           ))}
         </div>
       </div>
+      )}
 
       {/* Content Grid - Optimized Masonry Style */}
       <main className="p-3 lg:p-6">
