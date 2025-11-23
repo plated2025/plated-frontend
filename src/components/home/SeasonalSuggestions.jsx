@@ -29,48 +29,37 @@ function SeasonalSuggestions() {
       color: 'from-green-400 to-emerald-500',
       emoji: '🌸',
       title: 'Fresh Spring Flavors',
-      recipes: [
-        { name: 'Spring Salad', time: '15min', emoji: '🥗' },
-        { name: 'Lemon Chicken', time: '35min', emoji: '🍋' },
-        { name: 'Asparagus Risotto', time: '45min', emoji: '🌿' }
-      ]
+      recipes: []
     },
     summer: {
       icon: Sun,
       color: 'from-yellow-400 to-orange-500',
       emoji: '☀️',
       title: 'Cool Summer Eats',
-      recipes: [
-        { name: 'BBQ Skewers', time: '25min', emoji: '🍢' },
-        { name: 'Watermelon Salad', time: '10min', emoji: '🍉' },
-        { name: 'Grilled Fish', time: '20min', emoji: '🐟' }
-      ]
+      recipes: []
     },
     fall: {
       icon: Leaf,
       color: 'from-orange-400 to-red-500',
       emoji: '🍂',
       title: 'Cozy Fall Comfort',
-      recipes: [
-        { name: 'Pumpkin Soup', time: '40min', emoji: '🎃' },
-        { name: 'Apple Pie', time: '60min', emoji: '🥧' },
-        { name: 'Roasted Veggies', time: '35min', emoji: '🥕' }
-      ]
+      recipes: []
     },
     winter: {
       icon: Snowflake,
       color: 'from-blue-400 to-cyan-500',
       emoji: '❄️',
       title: 'Warm Winter Dishes',
-      recipes: [
-        { name: 'Hot Stew', time: '90min', emoji: '🍲' },
-        { name: 'Baked Pasta', time: '45min', emoji: '🍝' },
-        { name: 'Hot Chocolate', time: '10min', emoji: '☕' }
-      ]
+      recipes: []
     }
   }
-
+  
   const currentSeason = seasonalData[season]
+  
+  // Don't render if no seasonal recipes
+  if (!currentSeason || currentSeason.recipes.length === 0) {
+    return null
+  }
 
   const timeBasedSuggestions = {
     morning: { emoji: '🌅', suggestion: 'Energizing breakfast ideas', icon: '☕' },

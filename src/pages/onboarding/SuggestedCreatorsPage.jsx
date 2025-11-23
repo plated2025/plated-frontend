@@ -72,6 +72,21 @@ function SuggestedCreatorsPage() {
         </div>
 
         {/* Creator Grid */}
+        {creators.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+              <span className="text-4xl">👨‍🍳</span>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No Creators Yet</h3>
+            <p className="text-gray-600 mb-6">Creators will appear here once they join the platform</p>
+            <button
+              onClick={handleSkip}
+              className="btn-primary"
+            >
+              Continue to App
+            </button>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {creators.map(creator => (
             <div key={creator.id} className="card p-4">
@@ -119,6 +134,7 @@ function SuggestedCreatorsPage() {
             </div>
           ))}
         </div>
+        )}
 
         {/* Continue Button */}
         <button

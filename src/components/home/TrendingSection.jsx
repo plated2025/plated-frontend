@@ -15,35 +15,14 @@ function TrendingSection() {
     return () => clearInterval(interval)
   }, [])
 
-  const trendingNow = [
-    { 
-      name: 'Air Fryer Magic', 
-      count: '12.5K posts', 
-      growth: '+245%',
-      emoji: '✨',
-      tag: 'trending'
-    },
-    { 
-      name: 'Sourdough Starters', 
-      count: '8.2K posts', 
-      growth: '+189%',
-      emoji: '🍞',
-      tag: 'hot'
-    },
-    { 
-      name: 'Plant-Based Bowls', 
-      count: '6.7K posts', 
-      growth: '+156%',
-      emoji: '🥗',
-      tag: 'rising'
-    }
-  ]
-
-  const liveNow = [
-    { chef: 'Gordon', cooking: 'Perfect Steak', viewers: 2341 },
-    { chef: 'Jamie', cooking: 'Italian Pasta', viewers: 1876 },
-    { chef: 'Yuki', cooking: 'Sushi Masterclass', viewers: 1523 }
-  ]
+  // Empty arrays - real data comes from backend API
+  const trendingNow = []
+  const liveNow = []
+  
+  // Don't render if no trending data
+  if (trendingNow.length === 0 && liveNow.length === 0) {
+    return null
+  }
 
   return (
     <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
