@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { X, Camera, Upload, Scan, Sparkles, Loader2, AlertTriangle, CheckCircle, XCircle, Info, TrendingUp, TrendingDown, Shield } from 'lucide-react'
+import Portal from '../common/Portal'
 
 function ProductAnalyzerModal({ onClose }) {
   const fileInputRef = useRef(null)
@@ -115,6 +116,7 @@ function ProductAnalyzerModal({ onClose }) {
   }
 
   return (
+    <Portal>
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="glass-modal rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
         {/* Header */}
@@ -460,6 +462,7 @@ function ProductAnalyzerModal({ onClose }) {
         </div>
       </div>
     </div>
+    </Portal>
   )
 }
 

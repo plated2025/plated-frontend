@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Clock, Sunrise, Sun, Sunset, Moon, ChefHat, Zap, ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import Portal from '../common/Portal'
 
 function QuickMealsModal({ onClose }) {
   const navigate = useNavigate()
@@ -200,6 +201,7 @@ function QuickMealsModal({ onClose }) {
   const TimeIcon = currentMeal.icon
 
   return (
+    <Portal>
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="glass-modal rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
         {/* Header */}
@@ -313,6 +315,7 @@ function QuickMealsModal({ onClose }) {
         </div>
       </div>
     </div>
+    </Portal>
   )
 }
 
