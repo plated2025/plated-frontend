@@ -659,6 +659,98 @@ export const storyAPI = {
   getUserStories: async (userId) => {
     return await apiRequest(`/stories/user/${userId}`);
   },
+
+  getStory: async (id) => {
+    return await apiRequest(`/stories/${id}`);
+  },
+
+  deleteStory: async (id) => {
+    return await apiRequest(`/stories/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  likeStory: async (id) => {
+    return await apiRequest(`/stories/${id}/like`, {
+      method: 'POST',
+    });
+  },
+};
+
+// Collection API
+export const collectionAPI = {
+  getCollections: async () => {
+    return await apiRequest('/collections');
+  },
+
+  getCollection: async (id) => {
+    return await apiRequest(`/collections/${id}`);
+  },
+
+  createCollection: async (collectionData) => {
+    return await apiRequest('/collections', {
+      method: 'POST',
+      body: JSON.stringify(collectionData),
+    });
+  },
+
+  updateCollection: async (id, collectionData) => {
+    return await apiRequest(`/collections/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(collectionData),
+    });
+  },
+
+  deleteCollection: async (id) => {
+    return await apiRequest(`/collections/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  addRecipeToCollection: async (collectionId, recipeId) => {
+    return await apiRequest(`/collections/${collectionId}/recipes`, {
+      method: 'POST',
+      body: JSON.stringify({ recipeId }),
+    });
+  },
+
+  removeRecipeFromCollection: async (collectionId, recipeId) => {
+    return await apiRequest(`/collections/${collectionId}/recipes/${recipeId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  getPublicCollections: async () => {
+    return await apiRequest('/collections/public');
+  },
+
+  checkRecipeInCollections: async (recipeId) => {
+    return await apiRequest(`/collections/check/${recipeId}`);
+  },
+};
+
+// Achievement API
+export const achievementAPI = {
+  getAchievements: async () => {
+    return await apiRequest('/achievements');
+  },
+
+  checkAchievements: async () => {
+    return await apiRequest('/achievements/check', {
+      method: 'POST',
+    });
+  },
+
+  awardXP: async (amount, reason) => {
+    return await apiRequest('/achievements/xp', {
+      method: 'POST',
+      body: JSON.stringify({ amount, reason }),
+    });
+  },
+
+  getXPRewards: async () => {
+    return await apiRequest('/achievements/rewards');
+  },
 };
 
 export default {
@@ -675,4 +767,6 @@ export default {
   securityAPI,
   aiAPI,
   storyAPI,
+  collectionAPI,
+  achievementAPI,
 };

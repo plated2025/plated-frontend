@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Settings, Share2, MessageCircle, MoreVertical, MapPin, Globe, Grid, List, Bookmark, ChefHat, Calendar, Plus, Clock, Users as UsersIcon, Flame, Trophy, Star, Heart, Eye, TrendingUp, Award, Zap, Target, Camera, Video, Sparkles, QrCode, UserX, Flag, Loader } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { securityAPI, recipeAPI, userAPI } from '../services/api'
+import { securityAPI, recipeAPI, userAPI, collectionAPI } from '../services/api'
 import FollowersModal from '../components/FollowersModal'
 import MealPlanModal from '../components/profile/MealPlanModal'
 import QRCodeModal from '../components/profile/QRCodeModal'
@@ -69,9 +69,16 @@ function ProfilePage() {
       })
       setUserRecipes(recipesResponse.data || [])
       
-      // TODO: Fetch collections from API
-      // const collectionsResponse = await userAPI.getCollections(userId || currentUser?.id)
-      // setUserCollections(collectionsResponse.data || [])
+      // Fetch collections from API (only for own profile)
+      if (isOwnProfile) {
+        try {
+          const collectionsResponse = await collectionAPI.getCollections()
+          setUserCollections(collectionsResponse.data || [])
+        } catch (error) {
+          console.error('Error fetching collections:', error)
+          setUserCollections([])
+        }
+      }
       
     } catch (error) {
       console.error('Error loading profile data:', error)
