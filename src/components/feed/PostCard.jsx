@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, MessageCircle, Bookmark, Share2, MoreVertical, Calendar } from 'lucide-react'
 import ReshareToStoryModal from '../ReshareToStoryModal'
+import AddToMealPlanModal from '../AddToMealPlanModal'
+import { mealPlannerAPI } from '../../services/api'
 
 function PostCard({ recipe }) {
   const navigate = useNavigate()
@@ -10,6 +12,7 @@ function PostCard({ recipe }) {
   const [likes, setLikes] = useState(recipe.likes)
   const [showMenu, setShowMenu] = useState(false)
   const [showReshareModal, setShowReshareModal] = useState(false)
+  const [showMealPlanModal, setShowMealPlanModal] = useState(false)
 
   const handleLike = () => {
     setIsLiked(!isLiked)
@@ -40,7 +43,17 @@ function PostCard({ recipe }) {
   }
 
   const handleAddToPlanner = () => {
-    navigate('/planner')
+    setShowMealPlanModal(true)
+  }
+
+  const handleAddToMealPlan = async (mealData) => {
+    try {
+      await mealPlannerAPI.addMeal(mealData)
+      alert('Recipe added to meal plan successfully!')
+    } catch (error) {
+      console.error('Error adding to meal plan:', error)
+      alert('Failed to add recipe to meal plan. Please try again.')
+    }
   }
 
   const formatNumber = (num) => {
@@ -250,6 +263,14 @@ function PostCard({ recipe }) {
           image: recipe.image,
           user: recipe.creator
         }}
+      />
+
+      {/* Add to Meal Plan Modal */}
+      <AddToMealPlanModal
+        isOpen={showMealPlanModal}
+        onClose={() => setShowMealPlanModal(false)}
+        recipe={recipe}
+        onAdd={handleAddToMealPlan}
       />
     </article>
   )
