@@ -11,9 +11,9 @@ function AIFloatingButton() {
       {!showAssistant && (
         <button
           onClick={() => setShowAssistant(true)}
-          className="fixed left-4 bottom-20 md:bottom-6 z-[9999] group"
+          className="fixed left-4 bottom-20 md:bottom-6 group"
           aria-label="Open AI Assistant"
-          style={{ width: '56px', height: '56px' }}
+          style={{ width: '56px', height: '56px', zIndex: 99999 }}
         >
         {/* Glowing rings animation - contained */}
         <div className="absolute inset-0 rounded-full overflow-hidden">
