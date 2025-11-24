@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChefHat, Heart, Users, Sparkles, TrendingUp, Calendar, ArrowRight } from 'lucide-react'
+import { ChefHat, Heart, Users, Sparkles, TrendingUp, Calendar, ArrowRight, Download } from 'lucide-react'
 
 function WelcomePage() {
   const navigate = useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showContent, setShowContent] = useState(false)
   const [showLogo, setShowLogo] = useState(false)
+  const [deferredPrompt, setDeferredPrompt] = useState(null)
+  const [showInstallButton, setShowInstallButton] = useState(false)
 
   // Animate logo first, then content
   useEffect(() => {
@@ -17,6 +19,51 @@ function WelcomePage() {
       clearTimeout(contentTimer)
     }
   }, [])
+
+  // PWA Install Prompt
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault()
+      // Stash the event so it can be triggered later
+      setDeferredPrompt(e)
+      // Show install button
+      setShowInstallButton(true)
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setShowInstallButton(false)
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    }
+  }, [])
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      return
+    }
+
+    // Show the install prompt
+    deferredPrompt.prompt()
+
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice
+    
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt')
+    } else {
+      console.log('User dismissed the install prompt')
+    }
+
+    // Clear the deferredPrompt
+    setDeferredPrompt(null)
+    setShowInstallButton(false)
+  }
 
   const slides = [
     {
@@ -168,6 +215,17 @@ function WelcomePage() {
           Get Started
           <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
         </button>
+
+        {/* Download App Button (PWA Install) - Only show on mobile when installable */}
+        {showInstallButton && (
+          <button
+            onClick={handleInstallClick}
+            className={`w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-4 px-6 sm:px-8 rounded-2xl shadow-2xl transition-all duration-700 delay-600 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group text-lg mt-3 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+          >
+            <Download size={20} className="transform group-hover:scale-110 transition-transform" />
+            Download App
+          </button>
+        )}
 
         {/* Already have account */}
         <div className={`text-center mt-5 sm:mt-6 transition-all duration-700 delay-700 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
