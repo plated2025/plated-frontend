@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, Plus, X } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { mockUsers } from '../data/mockData'
 
 function AccountSwitchPage() {
   const navigate = useNavigate()
@@ -16,8 +15,6 @@ function AccountSwitchPage() {
   // Mock existing accounts (in real app, this would come from localStorage or backend)
   const savedAccounts = [
     currentUser,
-    mockUsers[1],
-    mockUsers[2]
   ].filter(Boolean)
 
   const handleSwitchAccount = (account) => {

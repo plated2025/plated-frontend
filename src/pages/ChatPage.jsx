@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Video, MoreVertical, Send, Image, Smile, ChefHat, Plus, Clock, Users, Heart, Paperclip, Gift, Calendar, User, Search, Bell, Pin, Trash2, Download, Ban, X } from 'lucide-react'
-import { mockMessages, mockRecipes } from '../data/mockData'
 import { useApp } from '../context/AppContext'
 import RecipeShareModal from '../components/RecipeShareModal'
 import CookingSessionModal from '../components/CookingSessionModal'
@@ -60,8 +59,9 @@ function ChatPage() {
     { id: 4, type: 'text', text: 'This looks amazing! Can\'t wait to try it 🍝', sender: 'other', timestamp: '10:35 AM' },
   ])
 
-  const chat = mockMessages.find(m => m.id === parseInt(chatId))
-  const otherUser = chat?.user || mockMessages[0].user
+  // TODO: Fetch from API
+  const chat = null
+  const otherUser = { name: 'User', avatar: 'https://i.pravatar.cc/150' }
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

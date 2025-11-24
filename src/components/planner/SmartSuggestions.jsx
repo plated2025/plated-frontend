@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Sparkles, TrendingUp, Clock, ChefHat, Heart } from 'lucide-react'
-import { mockRecipes } from '../../data/mockData'
+import { recommendationAPI } from '../../services/api'
 
 function SmartSuggestions({ onSelectRecipe }) {
   const [suggestions, setSuggestions] = useState([])
@@ -8,56 +8,37 @@ function SmartSuggestions({ onSelectRecipe }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Simulate AI processing
-    setTimeout(() => {
-      // AI-powered suggestions based on user preferences
-      const aiSuggestions = generateSmartSuggestions()
-      setSuggestions(aiSuggestions)
-
-      // Get trending/popular recipes
-      const trending = getPopularRecipes()
-      setPopularRecipes(trending)
-      
-      setLoading(false)
-    }, 800)
+    loadSuggestions()
   }, [])
 
+  const loadSuggestions = async () => {
+    setLoading(true)
+    try {
+      // Get personalized recommendations from backend
+      const aiResponse = await recommendationAPI.getPersonalized(6)
+      setSuggestions(aiResponse.data || [])
+
+      // Get trending recipes
+      const trendingResponse = await recommendationAPI.getTrending(6)
+      setPopularRecipes(trendingResponse.data || [])
+    } catch (error) {
+      console.error('Error loading suggestions:', error)
+      setSuggestions([])
+      setPopularRecipes([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const generateSmartSuggestions = () => {
-    // Simulate AI analysis based on:
+    // Backend handles AI analysis based on:
     // - User's dietary preferences
     // - Past liked recipes
     // - Seasonal ingredients
     // - Nutritional balance
     // - Cooking skill level
     
-    const userPreferences = {
-      cuisines: ['Italian', 'Asian', 'Mediterranean'],
-      dietaryRestrictions: [],
-      preferredCookTime: 30,
-      skillLevel: 'intermediate'
-    }
-
-    // Filter and score recipes
-    const scored = mockRecipes.map(recipe => {
-      let score = 0
-      
-      // Cuisine match
-      if (userPreferences.cuisines.includes(recipe.cuisine)) score += 3
-      
-      // Cook time preference
-      if (recipe.cookTime <= userPreferences.preferredCookTime) score += 2
-      
-      // Difficulty match
-      if (recipe.difficulty === userPreferences.skillLevel) score += 2
-      
-      // Random factor for variety
-      score += Math.random() * 2
-      
-      return { ...recipe, aiScore: score }
-    })
-
-    // Return top 6 suggestions
-    return scored
+    return suggestions
       .sort((a, b) => b.aiScore - a.aiScore)
       .slice(0, 6)
       .map(recipe => ({
@@ -79,10 +60,8 @@ function SmartSuggestions({ onSelectRecipe }) {
   }
 
   const getPopularRecipes = () => {
-    // Sort by likes and return top 6
-    return [...mockRecipes]
-      .sort((a, b) => b.likes - a.likes)
-      .slice(0, 6)
+    // Backend handles sorting by likes
+    return popularRecipes
   }
 
   if (loading) {

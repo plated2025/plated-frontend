@@ -1,18 +1,40 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
-import { mockUsers } from '../data/mockData'
+import { useNavigate } from 'react-router-dom'
+import { userAPI } from '../services/api'
 
-function FollowersModal({ isOpen, onClose, type = 'followers', userId }) {
+function FollowersModal({ isOpen, onClose, initialTab = 'followers', userId }) {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState(type)
+  const [activeTab, setActiveTab] = useState(initialTab)
+  const [followers, setFollowers] = useState([])
+  const [followingList, setFollowingList] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
   const [following, setFollowing] = useState({})
 
-  if (!isOpen) return null
+  useEffect(() => {
+    if (isOpen && userId) {
+      loadFollowers()
+    }
+  }, [isOpen, userId])
 
-  // Mock data - in real app, fetch based on userId
-  const followers = mockUsers.slice(0, 8)
-  const followingList = mockUsers.slice(2, 10)
+  const loadFollowers = async () => {
+    setIsLoading(true)
+    try {
+      // TODO: Implement followers API endpoints
+      // const followersRes = await userAPI.getFollowers(userId)
+      // const followingRes = await userAPI.getFollowing(userId)
+      // setFollowers(followersRes.data || [])
+      // setFollowingList(followingRes.data || [])
+      setFollowers([])
+      setFollowingList([])
+    } catch (error) {
+      console.error('Error loading followers:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (!isOpen) return null
 
   const users = activeTab === 'followers' ? followers : followingList
 

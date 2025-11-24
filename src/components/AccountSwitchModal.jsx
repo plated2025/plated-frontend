@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X, Plus, Check } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { mockUsers } from '../data/mockData'
 
 function AccountSwitchModal({ isOpen, onClose }) {
   const navigate = useNavigate()
@@ -12,8 +11,6 @@ function AccountSwitchModal({ isOpen, onClose }) {
   // Mock saved accounts
   const savedAccounts = [
     currentUser,
-    mockUsers[1],
-    mockUsers[2]
   ].filter(Boolean)
 
   const handleSwitchAccount = (account) => {

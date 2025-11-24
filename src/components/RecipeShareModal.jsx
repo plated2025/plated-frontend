@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { X, Search, ChefHat, Clock, Users, Star } from 'lucide-react'
-import { mockRecipes } from '../data/mockData'
 
 function RecipeShareModal({ isOpen, onClose, onShare }) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -8,7 +7,9 @@ function RecipeShareModal({ isOpen, onClose, onShare }) {
 
   if (!isOpen) return null
 
-  const filteredRecipes = mockRecipes.filter(recipe =>
+  // TODO: Fetch user's recipes from API
+      const userRecipes = []
+      const filteredRecipes = userRecipes.filter(recipe =>
     recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     recipe.description?.toLowerCase().includes(searchQuery.toLowerCase())
   )

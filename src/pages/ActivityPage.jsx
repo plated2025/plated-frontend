@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Heart, MessageCircle, Image, Calendar, TrendingUp, MoreVertical } from 'lucide-react'
-import { mockRecipes } from '../data/mockData'
 
 function ActivityPage() {
   const navigate = useNavigate()
@@ -9,10 +8,10 @@ function ActivityPage() {
   const [activeSidebar, setActiveSidebar] = useState('interactions')
   const [sortOrder, setSortOrder] = useState('newest') // newest, oldest
 
-  // Mock liked posts (using mockRecipes)
-  const likedPosts = mockRecipes.slice(0, 12)
-  const commentedPosts = mockRecipes.slice(2, 10)
-  const reviewedPosts = mockRecipes.slice(5, 13)
+  // TODO: Fetch from API
+  const likedPosts = []
+  const commentedPosts = []
+  const reviewedPosts = []
 
   const sidebarItems = [
     {
