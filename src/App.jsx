@@ -123,8 +123,8 @@ function App() {
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
         
-        {/* Root redirect - first time visitors go to welcome */}
-        <Route path="/" element={<Navigate to={isAuthenticated ? "/home" : "/welcome"} />} />
+        {/* Root redirect - show home page with recipes */}
+        <Route path="/" element={<Navigate to="/home" />} />
         
         {/* Onboarding Routes */}
         <Route 
@@ -152,11 +152,15 @@ function App() {
           element={isAuthenticated && !hasCompletedOnboarding ? <AchievementTutorialPage /> : <Navigate to="/home" />} 
         />
         
+        {/* Public Home & Explore (browsing without login) */}
+        <Route element={<MainLayout />}>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/explore" element={<ExplorePage />} />
+        </Route>
+        
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/explore" element={<ExplorePage />} />
             <Route path="/create" element={<CreatePage />} />
             <Route path="/planner" element={<PlannerPage />} />
             <Route path="/profile" element={<ProfilePage />} />
