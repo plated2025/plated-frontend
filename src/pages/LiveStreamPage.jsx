@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X, Users, Heart, MessageCircle, Send, Camera, CameraOff } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import webrtcService from '../services/webrtcService'
 
 function LiveStreamPage() {
   const navigate = useNavigate()
@@ -9,34 +10,81 @@ function LiveStreamPage() {
   const videoRef = useRef(null)
   const streamRef = useRef(null)
   
-  const [viewers, setViewers] = useState(Math.floor(Math.random() * 500) + 50)
+  const [viewers, setViewers] = useState(0)
   const [likes, setLikes] = useState(0)
   const [comment, setComment] = useState('')
   const [isCameraOn, setIsCameraOn] = useState(false)
   const [cameraError, setCameraError] = useState(null)
-  const [comments, setComments] = useState([
-    { id: 1, user: 'FoodLover23', text: 'This looks amazing! 😍', time: Date.now() - 5000 },
-    { id: 2, user: 'ChefMike', text: 'What temperature?', time: Date.now() - 3000 },
-    { id: 3, user: 'CookingQueen', text: 'Following along!', time: Date.now() - 1000 }
-  ])
+  const [comments, setComments] = useState([])
 
-  // Start camera on mount
+  // Start camera and WebRTC on mount
   useEffect(() => {
-    startCamera()
+    initializeBroadcast()
     
     return () => {
-      stopCamera()
+      cleanup()
     }
   }, [])
 
-  // Simulate viewer count changes
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setViewers(prev => Math.max(1, prev + Math.floor(Math.random() * 10) - 4))
-    }, 5000)
+  const initializeBroadcast = async () => {
+    // Connect to signaling server
+    const serverUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+    webrtcService.connect(serverUrl)
 
-    return () => clearInterval(interval)
-  }, [])
+    // Start camera
+    await startCamera()
+
+    // Start WebRTC broadcast
+    if (streamRef.current) {
+      const streamId = `stream-${Date.now()}`
+      webrtcService.setLocalStream(streamRef.current)
+      
+      await webrtcService.startBroadcast(
+        streamId,
+        currentUser?.id || 'user-' + Date.now(),
+        currentUser?.fullName || currentUser?.name || 'Anonymous Chef',
+        ({ viewerCount }) => {
+          // Viewer joined
+          setViewers(viewerCount)
+        },
+        ({ viewerCount }) => {
+          // Viewer left
+          setViewers(viewerCount)
+        }
+      )
+    }
+
+    // Listen for messages
+    webrtcService.socket?.on('stream-message', ({ message, userName }) => {
+      setComments(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          user: userName,
+          text: message,
+          time: Date.now()
+        }
+      ])
+    })
+
+    // Listen for likes
+    webrtcService.socket?.on('stream-like', () => {
+      setLikes(prev => prev + 1)
+    })
+
+    // Listen for viewer count
+    webrtcService.socket?.on('viewer-count-updated', ({ count }) => {
+      setViewers(count)
+    })
+  }
+
+  const cleanup = () => {
+    stopCamera()
+    webrtcService.endStream()
+    webrtcService.disconnect()
+  }
+
+  // Viewer count is now managed by WebRTC service (real-time)
 
   const startCamera = async () => {
     try {
@@ -80,19 +128,19 @@ function LiveStreamPage() {
 
   const handleSendComment = () => {
     if (comment.trim()) {
-      const newComment = {
-        id: comments.length + 1,
-        user: currentUser?.name || 'You',
-        text: comment,
-        time: Date.now()
-      }
-      setComments([...comments, newComment])
+      // Send through WebRTC
+      webrtcService.sendMessage(
+        comment,
+        currentUser?.id || 'user-' + Date.now(),
+        currentUser?.fullName || currentUser?.name || 'You'
+      )
       setComment('')
     }
   }
 
   const handleLike = () => {
-    setLikes(prev => prev + 1)
+    // Send through WebRTC
+    webrtcService.sendLike(currentUser?.id || 'user-' + Date.now())
   }
 
   const handleEndStream = () => {
