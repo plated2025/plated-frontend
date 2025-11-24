@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Image, Video, Camera, Clock, Users, ChefHat, Plus, X, Film } from 'lucide-react'
+import { ArrowLeft, Image, Video, Camera, Clock, Users, ChefHat, Plus, X, Film, Loader } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { recipeAPI, storyAPI } from '../services/api'
 import UpgradeToCreatorModal from '../components/UpgradeToCreatorModal'
 
 function CreatePage() {
@@ -9,11 +10,13 @@ function CreatePage() {
   const { userType } = useApp()
   const [showUpgradeModal, setShowUpgradeModal] = useState(userType !== 'creator')
   const [createType, setCreateType] = useState(null) // 'recipe', 'story', 'live'
+  const [isUploading, setIsUploading] = useState(false)
   
   // Block access for non-creators
   if (userType !== 'creator') {
     return <UpgradeToCreatorModal isOpen={true} onClose={() => navigate(-1)} />
   }
+  
   const [recipeData, setRecipeData] = useState({
     title: '',
     description: '',
@@ -125,9 +128,67 @@ function CreatePage() {
     }))
   }
 
-  const handlePublish = () => {
-    // Handle publish logic
-    navigate('/')
+  const handlePublish = async () => {
+    // Validate based on content type
+    if (createType === 'recipe') {
+      if (!recipeData.title || !recipeData.description) {
+        alert('Please fill in title and description')
+        return
+      }
+      if (recipeData.ingredients.filter(i => i.trim()).length === 0) {
+        alert('Please add at least one ingredient')
+        return
+      }
+      if (recipeData.steps.filter(s => s.trim()).length === 0) {
+        alert('Please add at least one step')
+        return
+      }
+    } else if (createType === 'story') {
+      if (!storyData.media) {
+        alert('Please upload an image or video')
+        return
+      }
+    }
+
+    setIsUploading(true)
+    
+    try {
+      if (createType === 'recipe') {
+        // Create FormData for recipe upload
+        const formData = new FormData()
+        formData.append('title', recipeData.title)
+        formData.append('description', recipeData.description)
+        formData.append('cookTime', recipeData.cookTime || '30')
+        formData.append('servings', recipeData.servings || '4')
+        formData.append('difficulty', recipeData.difficulty)
+        formData.append('ingredients', JSON.stringify(recipeData.ingredients.filter(i => i.trim())))
+        formData.append('steps', JSON.stringify(recipeData.steps.filter(s => s.trim())))
+        
+        if (recipeData.image) {
+          formData.append('image', recipeData.image)
+        }
+
+        await recipeAPI.createRecipe(formData)
+        alert('Recipe published successfully! 🎉')
+        
+      } else if (createType === 'story') {
+        // Create FormData for story upload
+        const formData = new FormData()
+        formData.append('caption', storyData.caption || '')
+        formData.append('media', storyData.media)
+        formData.append('mediaType', storyData.mediaType)
+
+        await storyAPI.createStory(formData)
+        alert('Story posted successfully! 🎉')
+      }
+      
+      navigate('/')
+    } catch (error) {
+      console.error('Upload failed:', error)
+      alert('Failed to publish. Please try again.')
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   const handleGoLive = () => {
@@ -232,8 +293,13 @@ function CreatePage() {
               </button>
               <h1 className="text-xl font-bold">New Recipe</h1>
             </div>
-            <button onClick={handlePublish} className="btn-primary">
-              Publish
+            <button 
+              onClick={handlePublish} 
+              disabled={isUploading}
+              className="btn-primary flex items-center gap-2"
+            >
+              {isUploading && <Loader size={16} className="animate-spin" />}
+              {isUploading ? 'Publishing...' : 'Publish'}
             </button>
           </div>
         </header>
@@ -412,8 +478,13 @@ function CreatePage() {
               </button>
               <h1 className="text-xl font-bold">New Story</h1>
             </div>
-            <button onClick={handlePublish} className="btn-primary">
-              Post
+            <button 
+              onClick={handlePublish}
+              disabled={isUploading}
+              className="btn-primary flex items-center gap-2"
+            >
+              {isUploading && <Loader size={16} className="animate-spin" />}
+              {isUploading ? 'Posting...' : 'Post'}
             </button>
           </div>
         </header>

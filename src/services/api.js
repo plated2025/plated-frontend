@@ -92,10 +92,28 @@ export const recipeAPI = {
   },
 
   createRecipe: async (recipeData) => {
-    return await apiRequest('/recipes', {
+    const token = getToken();
+    
+    // If recipeData is FormData, don't stringify
+    const isFormData = recipeData instanceof FormData;
+    
+    const config = {
       method: 'POST',
-      body: JSON.stringify(recipeData),
-    });
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(!isFormData && { 'Content-Type': 'application/json' }),
+      },
+      body: isFormData ? recipeData : JSON.stringify(recipeData),
+    };
+
+    const response = await fetch(`${API_URL}/recipes`, config);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to create recipe');
+    }
+
+    return data;
   },
 
   updateRecipe: async (id, recipeData) => {
@@ -610,6 +628,39 @@ export const aiAPI = {
   },
 };
 
+// Story API
+export const storyAPI = {
+  createStory: async (storyData) => {
+    const token = getToken();
+    
+    const config = {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+        // Don't set Content-Type for FormData - browser will set it with boundary
+      },
+      body: storyData, // FormData object
+    };
+
+    const response = await fetch(`${API_URL}/stories`, config);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to create story');
+    }
+
+    return data;
+  },
+
+  getStories: async () => {
+    return await apiRequest('/stories');
+  },
+
+  getUserStories: async (userId) => {
+    return await apiRequest(`/stories/user/${userId}`);
+  },
+};
+
 export default {
   authAPI,
   recipeAPI,
@@ -623,4 +674,5 @@ export default {
   recipeAdvancedAPI,
   securityAPI,
   aiAPI,
+  storyAPI,
 };
