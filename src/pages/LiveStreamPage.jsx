@@ -1,28 +1,82 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { X, Users, Heart, MessageCircle, Send } from 'lucide-react'
+import { X, Users, Heart, MessageCircle, Send, Camera, CameraOff } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 function LiveStreamPage() {
   const navigate = useNavigate()
   const { currentUser } = useApp()
+  const videoRef = useRef(null)
+  const streamRef = useRef(null)
+  
   const [viewers, setViewers] = useState(Math.floor(Math.random() * 500) + 50)
   const [likes, setLikes] = useState(0)
   const [comment, setComment] = useState('')
+  const [isCameraOn, setIsCameraOn] = useState(false)
+  const [cameraError, setCameraError] = useState(null)
   const [comments, setComments] = useState([
     { id: 1, user: 'FoodLover23', text: 'This looks amazing! 😍', time: Date.now() - 5000 },
     { id: 2, user: 'ChefMike', text: 'What temperature?', time: Date.now() - 3000 },
     { id: 3, user: 'CookingQueen', text: 'Following along!', time: Date.now() - 1000 }
   ])
 
+  // Start camera on mount
   useEffect(() => {
-    // Simulate viewer count changes
+    startCamera()
+    
+    return () => {
+      stopCamera()
+    }
+  }, [])
+
+  // Simulate viewer count changes
+  useEffect(() => {
     const interval = setInterval(() => {
       setViewers(prev => Math.max(1, prev + Math.floor(Math.random() * 10) - 4))
     }, 5000)
 
     return () => clearInterval(interval)
   }, [])
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }, 
+        audio: true 
+      })
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        streamRef.current = stream
+        setIsCameraOn(true)
+        setCameraError(null)
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error)
+      setCameraError('Could not access camera. Please check permissions.')
+      setIsCameraOn(false)
+    }
+  }
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop())
+      streamRef.current = null
+      setIsCameraOn(false)
+    }
+  }
+
+  const toggleCamera = () => {
+    if (isCameraOn) {
+      stopCamera()
+    } else {
+      startCamera()
+    }
+  }
 
   const handleSendComment = () => {
     if (comment.trim()) {
@@ -43,6 +97,7 @@ function LiveStreamPage() {
 
   const handleEndStream = () => {
     if (confirm('Are you sure you want to end the live stream?')) {
+      stopCamera()
       navigate('/')
     }
   }
@@ -51,16 +106,40 @@ function LiveStreamPage() {
     <div className="fixed inset-0 bg-black z-50">
       {/* Video Area */}
       <div className="relative h-full">
-        {/* Simulated Video Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-          <div className="text-white text-center">
-            <div className="w-32 h-32 mx-auto mb-4 bg-primary-600 rounded-full flex items-center justify-center animate-pulse">
-              <Users size={64} />
+        {/* Real Video Feed */}
+        {isCameraOn ? (
+          <video 
+            ref={videoRef}
+            autoPlay 
+            playsInline 
+            muted
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+            <div className="text-white text-center px-4">
+              <div className="w-32 h-32 mx-auto mb-4 bg-primary-600 rounded-full flex items-center justify-center">
+                <Camera size={64} />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">
+                {cameraError ? 'Camera Unavailable' : 'Starting Camera...'}
+              </h2>
+              {cameraError ? (
+                <div>
+                  <p className="text-gray-300 mb-4">{cameraError}</p>
+                  <button 
+                    onClick={startCamera}
+                    className="btn-primary"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : (
+                <p className="text-gray-300">Please allow camera access</p>
+              )}
             </div>
-            <h2 className="text-2xl font-bold mb-2">Live Streaming</h2>
-            <p className="text-gray-300">Camera feed would appear here</p>
           </div>
-        </div>
+        )}
 
         {/* Top Bar */}
         <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/60 to-transparent">
@@ -128,6 +207,21 @@ function LiveStreamPage() {
                 <Heart size={24} className="fill-white" />
               </div>
               <span className="text-white text-xs font-semibold">{likes}</span>
+            </button>
+          </div>
+
+          {/* Camera Toggle */}
+          <div className="flex justify-center mb-3">
+            <button
+              onClick={toggleCamera}
+              className={`px-4 py-2 rounded-full flex items-center gap-2 font-semibold transition-colors ${
+                isCameraOn 
+                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                  : 'bg-red-600 text-white hover:bg-red-700'
+              }`}
+            >
+              {isCameraOn ? <Camera size={20} /> : <CameraOff size={20} />}
+              {isCameraOn ? 'Camera On' : 'Camera Off'}
             </button>
           </div>
 
