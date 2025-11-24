@@ -35,7 +35,8 @@ function AuthCallback() {
             // Use the login function from AppContext
             login(data.data, true); // Skip onboarding for social login users
             console.log(`✅ ${provider} login successful:`, data.data.fullName);
-            navigate('/');
+            // Navigate directly to home, not root
+            navigate('/home', { replace: true });
           } else {
             throw new Error('Failed to fetch user data');
           }

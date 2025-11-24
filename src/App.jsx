@@ -209,20 +209,14 @@ function App() {
 
 // Protected Route Component
 function ProtectedRoute() {
-  const { isAuthenticated, hasCompletedOnboarding, hasSelectedUserType } = useApp()
+  const { isAuthenticated } = useApp()
   
   if (!isAuthenticated) {
     return <Navigate to="/welcome" />
   }
   
-  if (!hasCompletedOnboarding) {
-    // First check if user has selected their type
-    if (!hasSelectedUserType) {
-      return <Navigate to="/onboarding/user-type" />
-    }
-    return <Navigate to="/onboarding/interests" />
-  }
-  
+  // OAuth users skip onboarding - they're good to go!
+  // Don't force onboarding here - it causes redirect loops
   return <Outlet />
 }
 
