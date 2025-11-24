@@ -753,6 +753,65 @@ export const achievementAPI = {
   },
 };
 
+// Recommendation API  
+export const recommendationAPI = {
+  getPersonalized: async (limit = 10, category = null) => {
+    const params = new URLSearchParams({ limit });
+    if (category) params.append('category', category);
+    return await apiRequest(`/recommendations?${params}`);
+  },
+
+  getTrending: async (limit = 10, timeWindow = 7) => {
+    const params = new URLSearchParams({ limit, timeWindow });
+    return await apiRequest(`/recommendations/trending?${params}`);
+  },
+
+  getMealSuggestions: async (mealType, limit = 5) => {
+    const params = new URLSearchParams({ limit });
+    return await apiRequest(`/recommendations/meal/${mealType}?${params}`);
+  },
+
+  getNowSuggestions: async (limit = 5) => {
+    const params = new URLSearchParams({ limit });
+    return await apiRequest(`/recommendations/now?${params}`);
+  },
+
+  getWeatherBased: async (weather, limit = 10) => {
+    return await apiRequest('/recommendations/weather', {
+      method: 'POST',
+      body: JSON.stringify({ weather, limit }),
+    });
+  },
+
+  getSimilar: async (recipeId, limit = 5) => {
+    const params = new URLSearchParams({ limit });
+    return await apiRequest(`/recommendations/similar/${recipeId}?${params}`);
+  },
+};
+
+// Discovery API
+export const discoveryAPI = {
+  getSuggestedUsers: async (limit = 10) => {
+    const params = new URLSearchParams({ limit });
+    return await apiRequest(`/discovery/users/suggested?${params}`);
+  },
+
+  getTrendingUsers: async (limit = 10, timeWindow = 7) => {
+    const params = new URLSearchParams({ limit, timeWindow });
+    return await apiRequest(`/discovery/users/trending?${params}`);
+  },
+
+  getUsersByCuisine: async (cuisine, limit = 10) => {
+    const params = new URLSearchParams({ limit });
+    return await apiRequest(`/discovery/users/cuisine/${cuisine}?${params}`);
+  },
+
+  searchUsers: async (query, limit = 20) => {
+    const params = new URLSearchParams({ q: query, limit });
+    return await apiRequest(`/discovery/users/search?${params}`);
+  },
+};
+
 export default {
   authAPI,
   recipeAPI,
@@ -769,4 +828,6 @@ export default {
   storyAPI,
   collectionAPI,
   achievementAPI,
+  recommendationAPI,
+  discoveryAPI,
 };

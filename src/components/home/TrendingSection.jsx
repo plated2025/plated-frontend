@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
-import { TrendingUp, Clock, Eye, Heart, Flame } from 'lucide-react'
+import { TrendingUp, Clock, Eye, Heart, Flame, Loader } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { recommendationAPI } from '../../services/api'
 
 function TrendingSection() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('now') // 'now', 'today', 'week'
   const [liveCount, setLiveCount] = useState(1247)
+  const [trendingNow, setTrendingNow] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   // Simulate live counter
   useEffect(() => {
@@ -15,12 +18,27 @@ function TrendingSection() {
     return () => clearInterval(interval)
   }, [])
 
-  // Empty arrays - real data comes from backend API
-  const trendingNow = []
-  const liveNow = []
+  // Load trending recipes from API
+  useEffect(() => {
+    loadTrending()
+  }, [activeTab])
+
+  const loadTrending = async () => {
+    setIsLoading(true)
+    try {
+      const timeWindow = activeTab === 'now' ? 1 : activeTab === 'today' ? 1 : 7
+      const response = await recommendationAPI.getTrending(5, timeWindow)
+      setTrendingNow(response.data || [])
+    } catch (error) {
+      console.error('Error loading trending:', error)
+      setTrendingNow([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
   
   // Don't render if no trending data
-  if (trendingNow.length === 0 && liveNow.length === 0) {
+  if (!isLoading && trendingNow.length === 0) {
     return null
   }
 
@@ -60,67 +78,57 @@ function TrendingSection() {
           ))}
         </div>
 
-        {/* Trending Topics */}
+        {/* Trending Recipes */}
         <div className="space-y-2 mb-4">
-          {trendingNow.map((trend, idx) => (
-            <button
-              key={idx}
-              onClick={() => navigate(`/explore?search=${trend.name}`)}
-              className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg hover:shadow-md transition-all group"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{trend.emoji}</span>
-                <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-gray-900 dark:text-white">
-                      {trend.name}
+          {isLoading ? (
+            <div className="flex justify-center py-4">
+              <Loader size={20} className="animate-spin text-primary-600" />
+            </div>
+          ) : (
+            trendingNow.map((recipe, idx) => (
+              <button
+                key={recipe._id || idx}
+                onClick={() => navigate(`/recipe/${recipe._id}`)}
+                className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg hover:shadow-md transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  {recipe.image && (
+                    <img
+                      src={recipe.image}
+                      alt={recipe.title}
+                      className="w-12 h-12 rounded-lg object-cover"
+                    />
+                  )}
+                  <div className="text-left">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900 dark:text-white line-clamp-1">
+                        {recipe.title}
+                      </p>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-red-500 text-white">
+                        TRENDING
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                      <Heart size={12} className="inline" />
+                      {recipe.likes?.length || 0} likes
+                      {recipe.views && (
+                        <>
+                          <span>•</span>
+                          <Eye size={12} className="inline" />
+                          {recipe.views} views
+                        </>
+                      )}
                     </p>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                      trend.tag === 'trending' ? 'bg-red-500 text-white' :
-                      trend.tag === 'hot' ? 'bg-orange-500 text-white' :
-                      'bg-blue-500 text-white'
-                    }`}>
-                      {trend.tag.toUpperCase()}
-                    </span>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {trend.count} • <span className="text-green-600 dark:text-green-400">{trend.growth}</span>
-                  </p>
                 </div>
-              </div>
-              <TrendingUp size={20} className="text-orange-500 group-hover:scale-125 transition-transform" />
-            </button>
-          ))}
+                <TrendingUp size={20} className="text-orange-500 group-hover:scale-125 transition-transform" />
+              </button>
+            ))
+          )}
         </div>
 
-        {/* Live Sessions */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-            🔴 Live Cooking Sessions
-          </h4>
-          <div className="space-y-2">
-            {liveNow.map((session, idx) => (
-              <button
-                key={idx}
-                onClick={() => navigate('/live')}
-                className="w-full flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {session.chef} • {session.cooking}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                      <Eye size={12} />
-                      {session.viewers.toLocaleString()} watching
-                    </p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Live Sessions - Future feature */}
+        {/* Uncomment when live sessions API is ready */}
       </div>
     </div>
   )
