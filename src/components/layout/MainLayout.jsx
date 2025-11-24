@@ -10,7 +10,7 @@ function MainLayout() {
   const isFullWidthPage = fullWidthPages.includes(location.pathname) || location.pathname.startsWith('/profile/')
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-16 lg:pb-0">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pb-16 lg:pb-0">
       <main className={isFullWidthPage ? 'w-full' : 'max-w-2xl mx-auto'}>
         <Outlet />
       </main>
