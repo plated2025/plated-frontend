@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { X, Mic, ArrowLeft } from 'lucide-react'
+import { aiAPI } from '../../services/api'
 
 function AIAssistantModal({ isOpen, onClose }) {
   const [inputMessage, setInputMessage] = useState('')
@@ -157,16 +158,28 @@ function AIAssistantModal({ isOpen, onClose }) {
 
             // Generate AI response
             setTimeout(async () => {
-              const aiResponse = generateSmartResponse(userMessage.content)
-              
-              const aiMessage = {
-                role: 'assistant',
-                content: aiResponse,
-                timestamp: new Date().toISOString()
-              }
+              try {
+                const response = await aiAPI.chat(userMessage.content, conversation)
+                
+                const aiMessage = {
+                  role: 'assistant',
+                  content: response.data.response,
+                  timestamp: new Date().toISOString()
+                }
 
-              setConversation(prev => [...prev, aiMessage])
-              setIsThinking(false)
+                setConversation(prev => [...prev, aiMessage])
+              } catch (error) {
+                console.error('AI Chat Error:', error)
+                const fallbackResponse = generateSmartResponse(userMessage.content)
+                const aiMessage = {
+                  role: 'assistant',
+                  content: fallbackResponse,
+                  timestamp: new Date().toISOString()
+                }
+                setConversation(prev => [...prev, aiMessage])
+              } finally {
+                setIsThinking(false)
+              }
             }, 1500)
           }, 100)
         }
@@ -206,22 +219,37 @@ function AIAssistantModal({ isOpen, onClose }) {
       setSearchHistory(prev => [inputMessage.trim(), ...prev.slice(0, 4)])
     }
 
-    setConversation(prev => [...prev, userMessage])
+    const newConversation = [...conversation, userMessage]
+    setConversation(newConversation)
     setInputMessage('')
     setIsThinking(true)
 
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    try {
+      // Call real Gemini AI API with conversation history
+      const response = await aiAPI.chat(userMessage.content, conversation)
+      
+      const aiMessage = {
+        role: 'assistant',
+        content: response.data.response,
+        timestamp: new Date().toISOString()
+      }
 
-    const aiResponse = generateSmartResponse(userMessage.content)
-    
-    const aiMessage = {
-      role: 'assistant',
-      content: aiResponse,
-      timestamp: new Date().toISOString()
+      setConversation(prev => [...prev, aiMessage])
+    } catch (error) {
+      console.error('AI Chat Error:', error)
+      
+      // Fallback to local response if API fails
+      const fallbackResponse = generateSmartResponse(userMessage.content)
+      const aiMessage = {
+        role: 'assistant',
+        content: fallbackResponse,
+        timestamp: new Date().toISOString()
+      }
+      
+      setConversation(prev => [...prev, aiMessage])
+    } finally {
+      setIsThinking(false)
     }
-
-    setConversation(prev => [...prev, aiMessage])
-    setIsThinking(false)
   }
 
   const handleKeyPress = (e) => {

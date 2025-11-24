@@ -595,6 +595,13 @@ export const aiAPI = {
       body: JSON.stringify({ query }),
     });
   },
+
+  chat: async (message, conversationHistory = []) => {
+    return await apiRequest('/ai/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message, conversationHistory }),
+    });
+  },
 };
 
 export default {
