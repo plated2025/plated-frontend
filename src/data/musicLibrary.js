@@ -83,6 +83,7 @@ export const getTracksByCategory = (category) => {
 
 // Music categories with metadata
 export const musicCategories = [
+  { id: 'jamendo', name: 'Browse All', icon: '🌐', description: '500K+ tracks from Jamendo', isApi: true },
   { id: 'trending', name: 'Trending', icon: '🔥', description: 'Popular right now' },
   { id: 'lofi', name: 'Lo-Fi', icon: '🌙', description: 'Chill & relaxed' },
   { id: 'jazz', name: 'Jazz', icon: '🎷', description: 'Smooth & sophisticated' },

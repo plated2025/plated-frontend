@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Upload, Scissors, Palette, Music, Play, Save, X, Type, Image as ImageIcon, Hash, Lock, Globe, Users, Trash2, Search, TrendingUp, Pause } from 'lucide-react'
+import { ArrowLeft, Upload, Scissors, Palette, Music, Play, Save, X, Type, Image as ImageIcon, Hash, Lock, Globe, Users, Trash2, Search, TrendingUp, Pause, Loader } from 'lucide-react'
 import { musicLibrary, musicCategories, searchTracks, getAllTracks } from '../data/musicLibrary'
+import jamendoService from '../services/jamendoService'
 
 function CreateReelPage() {
   const navigate = useNavigate()
@@ -31,9 +32,58 @@ function CreateReelPage() {
   const [musicCategory, setMusicCategory] = useState('trending')
   const [musicSearch, setMusicSearch] = useState('')
   const [playingPreview, setPlayingPreview] = useState(null)
+  const [jamendoTracks, setJamendoTracks] = useState([])
+  const [isLoadingMusic, setIsLoadingMusic] = useState(false)
+  
+  // Load Jamendo tracks when category changes to jamendo
+  useEffect(() => {
+    if (musicCategory === 'jamendo' && jamendoTracks.length === 0) {
+      loadJamendoTracks();
+    }
+  }, [musicCategory]);
+
+  const loadJamendoTracks = async () => {
+    setIsLoadingMusic(true);
+    try {
+      // Load featured tracks from Jamendo
+      const tracks = await jamendoService.getFeaturedTracks(30);
+      setJamendoTracks(tracks);
+    } catch (error) {
+      console.error('Failed to load Jamendo tracks:', error);
+    } finally {
+      setIsLoadingMusic(false);
+    }
+  };
+
+  const searchJamendoTracks = async (query) => {
+    if (!query.trim()) {
+      loadJamendoTracks();
+      return;
+    }
+    
+    setIsLoadingMusic(true);
+    try {
+      const tracks = await jamendoService.searchTracks(query, 30);
+      setJamendoTracks(tracks);
+    } catch (error) {
+      console.error('Failed to search Jamendo tracks:', error);
+    } finally {
+      setIsLoadingMusic(false);
+    }
+  };
   
   // Get music tracks based on category or search
   const getMusicTracks = () => {
+    // If Jamendo category, return API tracks
+    if (musicCategory === 'jamendo') {
+      if (musicSearch.trim()) {
+        // Don't filter here, search is handled by API
+        return jamendoTracks;
+      }
+      return jamendoTracks;
+    }
+    
+    // For local library categories
     if (musicSearch.trim()) {
       return searchTracks(musicSearch);
     }
@@ -345,10 +395,19 @@ function CreateReelPage() {
                     <input
                       type="text"
                       value={musicSearch}
-                      onChange={(e) => setMusicSearch(e.target.value)}
-                      placeholder="Search music..."
+                      onChange={(e) => {
+                        setMusicSearch(e.target.value);
+                        // Trigger Jamendo API search if in Jamendo category
+                        if (musicCategory === 'jamendo' && e.target.value.trim()) {
+                          searchJamendoTracks(e.target.value);
+                        }
+                      }}
+                      placeholder={musicCategory === 'jamendo' ? "Search 500K+ tracks..." : "Search music..."}
                       className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/30 backdrop-blur-sm border border-white/30 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-white/50"
                     />
+                    {isLoadingMusic && (
+                      <Loader className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-600 animate-spin" size={20} />
+                    )}
                   </div>
 
                   {/* Category Pills */}
@@ -394,7 +453,15 @@ function CreateReelPage() {
 
                   {/* Music Tracks List */}
                   <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {getMusicTracks().length > 0 ? (
+                    {isLoadingMusic ? (
+                      <div className="text-center py-12">
+                        <Loader className="mx-auto mb-3 animate-spin text-primary-600" size={48} />
+                        <p className="font-medium text-gray-700">Loading tracks...</p>
+                        <p className="text-sm text-gray-500">
+                          {musicCategory === 'jamendo' ? 'Fetching from 500K+ tracks' : 'Please wait'}
+                        </p>
+                      </div>
+                    ) : getMusicTracks().length > 0 ? (
                       getMusicTracks().map((track) => (
                         <button
                           key={track.id}
