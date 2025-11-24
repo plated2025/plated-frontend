@@ -21,8 +21,34 @@ function CreatePage() {
     servings: '',
     difficulty: 'easy',
     ingredients: [''],
-    steps: ['']
+    steps: [''],
+    image: null,
+    imagePreview: null
   })
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file)
+      setRecipeData(prev => ({
+        ...prev,
+        image: file,
+        imagePreview: previewUrl
+      }))
+    }
+  }
+
+  const handleRemoveImage = () => {
+    if (recipeData.imagePreview) {
+      URL.revokeObjectURL(recipeData.imagePreview)
+    }
+    setRecipeData(prev => ({
+      ...prev,
+      image: null,
+      imagePreview: null
+    }))
+  }
 
   const handleAddIngredient = () => {
     setRecipeData(prev => ({
@@ -182,14 +208,36 @@ function CreatePage() {
         <div className="p-4 max-w-2xl mx-auto pb-20">
           {/* Image Upload */}
           <div className="card p-6 mb-4">
-            <label className="block w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                <Image size={40} className="mb-2" />
-                <span className="text-sm font-medium">Upload recipe photo</span>
-                <span className="text-xs text-gray-400 mt-1">PNG, JPG up to 10MB</span>
+            {recipeData.imagePreview ? (
+              <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                <img 
+                  src={recipeData.imagePreview} 
+                  alt="Recipe preview" 
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  onClick={handleRemoveImage}
+                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  type="button"
+                >
+                  <X size={20} />
+                </button>
               </div>
-              <input type="file" className="hidden" accept="image/*" />
-            </label>
+            ) : (
+              <label className="block w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
+                <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                  <Image size={40} className="mb-2" />
+                  <span className="text-sm font-medium">Upload recipe photo</span>
+                  <span className="text-xs text-gray-400 mt-1">PNG, JPG up to 10MB</span>
+                </div>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={handleImageUpload}
+                />
+              </label>
+            )}
           </div>
 
           {/* Basic Info */}
