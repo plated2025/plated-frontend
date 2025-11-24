@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, MessageCircle, Bookmark, Share2, Music, Volume2, VolumeX, MoreVertical, UserPlus, ChevronUp, ChevronDown, Sparkles, ChefHat } from 'lucide-react'
+import { Heart, MessageCircle, Bookmark, Share2, Music, Volume2, VolumeX, MoreVertical, UserPlus, ChevronUp, ChevronDown, Sparkles, ChefHat, Loader } from 'lucide-react'
+import { recipeAPI } from '../services/api'
 
-// Mock reels data with sample video URLs
-const mockReels = [
+// Removed mock data - now fetching from backend API
+const sampleReels = [
   {
     id: 1,
     video: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
@@ -104,7 +105,8 @@ const mockReels = [
 function ReelsPage() {
   const navigate = useNavigate()
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [reels, setReels] = useState(mockReels)
+  const [reels, setReels] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [showComments, setShowComments] = useState(false)
   const [showShare, setShowShare] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
@@ -117,6 +119,32 @@ function ReelsPage() {
   const [isScrolling, setIsScrolling] = useState(false)
 
   const currentReel = reels[currentIndex]
+
+  // Load reels from backend API
+  useEffect(() => {
+    loadReels()
+  }, [])
+
+  const loadReels = async () => {
+    setIsLoading(true)
+    try {
+      // Fetch reels from backend (videos/reels type content)
+      const response = await recipeAPI.getRecipes({ type: 'reel', limit: 20 })
+      
+      if (response.data && response.data.length > 0) {
+        setReels(response.data)
+      } else {
+        // If no reels from backend, use sample fallback for demo
+        setReels(sampleReels)
+      }
+    } catch (error) {
+      console.error('Error loading reels:', error)
+      // Fallback to sample reels for demo
+      setReels(sampleReels)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   // Auto-play video when index changes
   useEffect(() => {
@@ -139,10 +167,10 @@ function ReelsPage() {
         
         if (e.deltaY > 0) {
           // Scroll down - next reel
-          setCurrentIndex(prev => prev < mockReels.length - 1 ? prev + 1 : 0)
+          setCurrentIndex(prev => prev < reels.length - 1 ? prev + 1 : 0)
         } else {
           // Scroll up - previous reel
-          setCurrentIndex(prev => prev > 0 ? prev - 1 : mockReels.length - 1)
+          setCurrentIndex(prev => prev > 0 ? prev - 1 : reels.length - 1)
         }
         
         clearTimeout(scrollTimeout)
@@ -170,10 +198,10 @@ function ReelsPage() {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowUp') {
         e.preventDefault()
-        setCurrentIndex(prev => prev > 0 ? prev - 1 : mockReels.length - 1)
+        setCurrentIndex(prev => prev > 0 ? prev - 1 : reels.length - 1)
       } else if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setCurrentIndex(prev => prev < mockReels.length - 1 ? prev + 1 : 0)
+        setCurrentIndex(prev => prev < reels.length - 1 ? prev + 1 : 0)
       } else if (e.key === ' ') {
         e.preventDefault()
         if (videoRef.current) {
@@ -288,6 +316,38 @@ function ReelsPage() {
     return num
   }
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-black flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 text-white animate-spin mx-auto mb-4" />
+          <p className="text-white text-lg font-semibold">Loading Reels...</p>
+          <p className="text-gray-400 text-sm mt-2">Fetching amazing food content</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show empty state if no reels
+  if (!reels || reels.length === 0) {
+    return (
+      <div className="fixed inset-0 bg-black flex items-center justify-center">
+        <div className="text-center px-6">
+          <ChefHat className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <h2 className="text-white text-2xl font-bold mb-2">No Reels Yet</h2>
+          <p className="text-gray-400 mb-6">Be the first to create amazing cooking reels!</p>
+          <button
+            onClick={() => navigate('/create')}
+            className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-full font-semibold transition-colors"
+          >
+            Create Your First Reel
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div 
       ref={containerRef}
@@ -306,9 +366,9 @@ function ReelsPage() {
       <div className="relative w-full h-full">
         <video
           ref={videoRef}
-          key={currentReel.id}
-          src={currentReel.video}
-          poster={currentReel.thumbnail}
+          key={currentReel?.id}
+          src={currentReel?.video}
+          poster={currentReel?.thumbnail}
           className="w-full h-full object-cover"
           onClick={handleVideoClick}
           autoPlay
