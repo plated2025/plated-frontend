@@ -6,7 +6,7 @@ function MainLayout() {
   const location = useLocation()
   
   // Pages that have their own desktop layout with sidebars
-  const fullWidthPages = ['/', '/profile', '/notifications', '/planner', '/explore', '/messages']
+  const fullWidthPages = ['/', '/home', '/profile', '/notifications', '/planner', '/explore', '/messages']
   const isFullWidthPage = fullWidthPages.includes(location.pathname) || location.pathname.startsWith('/profile/')
   
   return (
