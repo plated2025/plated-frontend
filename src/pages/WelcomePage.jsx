@@ -64,7 +64,7 @@ function WelcomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-900 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden safe-area-inset">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-900 flex flex-col items-center justify-center px-5 py-6 sm:p-6 relative overflow-hidden safe-area-inset">
       {/* Glowing Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Large glowing orbs */}
@@ -79,31 +79,31 @@ function WelcomePage() {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 max-w-md w-full pt-safe pb-safe">
+      <div className="relative z-10 max-w-md w-full flex flex-col pt-safe pb-safe">
         {/* Logo - Centered with Animation */}
-        <div className={`text-center mb-8 sm:mb-12 transition-all duration-1000 ${showLogo ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}`}>
-          <div className="flex items-center justify-center mb-4 sm:mb-6">
+        <div className={`text-center mb-6 sm:mb-10 transition-all duration-1000 ${showLogo ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}`}>
+          <div className="flex items-center justify-center mb-3 sm:mb-5">
             <div className="relative inline-flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
               {/* Glow effect behind logo */}
               <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full animate-pulse-slow" />
               <img 
                 src="/plated-logo.png" 
                 alt="Plated" 
-                className="relative h-24 sm:h-28 w-auto drop-shadow-2xl filter brightness-0 invert animate-float-gentle"
+                className="relative h-20 sm:h-28 w-auto drop-shadow-2xl filter brightness-0 invert animate-float-gentle"
               />
               {/* BETA badge positioned closer to logo */}
-              <span className="absolute -top-2 -right-12 bg-white/20 backdrop-blur-md text-white text-xs font-bold px-2 py-0.5 rounded-full border border-white/30 shadow-lg animate-pulse-slow">
+              <span className="absolute -top-1 -right-8 sm:-top-2 sm:-right-12 bg-white/20 backdrop-blur-md text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 sm:px-2 rounded-full border border-white/30 shadow-lg animate-pulse-slow">
                 BETA
               </span>
             </div>
           </div>
-          <p className="text-purple-100 text-base sm:text-lg font-medium tracking-wide animate-fade-in-delayed">
+          <p className="text-purple-100 text-sm sm:text-lg font-medium tracking-wide animate-fade-in-delayed">
             Cook. Share. Inspire.
           </p>
         </div>
 
         {/* Slide Content with Animation */}
-        <div className={`bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 mb-6 sm:mb-8 border border-white/20 shadow-2xl min-h-[280px] sm:min-h-[320px] flex flex-col items-center justify-center transition-all duration-700 ${showContent ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+        <div className={`bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 mb-5 sm:mb-7 border border-white/20 shadow-2xl min-h-[260px] sm:min-h-[320px] flex flex-col items-center justify-center transition-all duration-700 ${showContent ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           {slides.map((slide, index) => (
             <div
               key={index}
@@ -115,29 +115,29 @@ function WelcomePage() {
                   : 'opacity-0 scale-95 translate-y-4'
               }`}
             >
-              <div className="text-center px-2 sm:px-4">
+              <div className="text-center px-3 sm:px-4">
                 {/* Icon with Gradient */}
-                <div className={`inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br ${slide.color} rounded-2xl mb-4 sm:mb-6 shadow-xl transform transition-transform duration-700 ${
+                <div className={`inline-flex items-center justify-center w-18 h-18 sm:w-20 sm:h-20 bg-gradient-to-br ${slide.color} rounded-2xl mb-5 sm:mb-6 shadow-xl transform transition-transform duration-700 ${
                   index === currentSlide ? 'rotate-0' : 'rotate-12'
                 }`}>
                   {index === 0 ? (
                     <img 
                       src="/logo icon.png" 
                       alt="Welcome" 
-                      className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
+                      className="w-14 h-14 sm:w-14 sm:h-14 object-contain"
                     />
                   ) : (
-                    <slide.icon size={28} className="text-white sm:w-9 sm:h-9" />
+                    <slide.icon size={32} className="text-white sm:w-9 sm:h-9" />
                   )}
                 </div>
 
                 {/* Title */}
-                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4 drop-shadow-md leading-tight">
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-4 drop-shadow-md leading-tight">
                   {slide.title}
                 </h2>
 
                 {/* Description */}
-                <p className="text-purple-100 text-sm sm:text-lg leading-relaxed max-w-xs sm:max-w-full mx-auto">
+                <p className="text-purple-100 text-base sm:text-lg leading-relaxed max-w-sm sm:max-w-full mx-auto px-2">
                   {slide.description}
                 </p>
               </div>
@@ -146,15 +146,15 @@ function WelcomePage() {
         </div>
 
         {/* Slide Indicators */}
-        <div className={`flex items-center justify-center gap-2 mb-6 sm:mb-8 transition-all duration-700 delay-300 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className={`flex items-center justify-center gap-2.5 mb-5 sm:mb-7 transition-all duration-700 delay-300 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${
+              className={`rounded-full transition-all duration-300 shadow-lg ${
                 index === currentSlide
-                  ? 'w-8 bg-white'
-                  : 'w-2 bg-white/40 hover:bg-white/60'
+                  ? 'h-2.5 w-10 bg-white shadow-white/50'
+                  : 'h-2.5 w-2.5 bg-white/30 hover:bg-white/50'
               }`}
             />
           ))}
@@ -163,17 +163,17 @@ function WelcomePage() {
         {/* Get Started Button */}
         <button
           onClick={() => handleNavigate('/signup')}
-          className={`w-full bg-white hover:bg-gray-100 text-purple-700 font-bold py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-2xl transition-all duration-700 delay-500 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group text-base sm:text-lg ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+          className={`w-full bg-white hover:bg-gray-100 text-purple-700 font-bold py-4 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-2xl transition-all duration-700 delay-500 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group text-lg sm:text-lg ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
         >
           Get Started
           <ArrowRight size={20} className="transform group-hover:translate-x-1 transition-transform" />
         </button>
 
         {/* Already have account */}
-        <div className={`text-center mt-4 sm:mt-6 transition-all duration-700 delay-700 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className={`text-center mt-5 sm:mt-6 transition-all duration-700 delay-700 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <button
             onClick={() => handleNavigate('/login')}
-            className="text-white/90 hover:text-white font-medium transition-colors text-sm sm:text-base"
+            className="text-white/90 hover:text-white font-medium transition-colors text-base sm:text-base"
           >
             Already have an account? <span className="underline">Sign In</span>
           </button>
