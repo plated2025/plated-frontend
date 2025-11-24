@@ -26,6 +26,13 @@ function CreatePage() {
     imagePreview: null
   })
 
+  const [storyData, setStoryData] = useState({
+    media: null,
+    mediaPreview: null,
+    mediaType: null, // 'image' or 'video'
+    caption: ''
+  })
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -47,6 +54,32 @@ function CreatePage() {
       ...prev,
       image: null,
       imagePreview: null
+    }))
+  }
+
+  const handleStoryMediaUpload = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'image'
+      const previewUrl = URL.createObjectURL(file)
+      setStoryData(prev => ({
+        ...prev,
+        media: file,
+        mediaPreview: previewUrl,
+        mediaType
+      }))
+    }
+  }
+
+  const handleRemoveStoryMedia = () => {
+    if (storyData.mediaPreview) {
+      URL.revokeObjectURL(storyData.mediaPreview)
+    }
+    setStoryData(prev => ({
+      ...prev,
+      media: null,
+      mediaPreview: null,
+      mediaType: null
     }))
   }
 
@@ -387,17 +420,49 @@ function CreatePage() {
 
         <div className="p-6 max-w-2xl mx-auto">
           <div className="card p-6">
-            <label className="block w-full h-96 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                <Camera size={48} className="mb-3" />
-                <span className="text-lg font-medium mb-2">Add Photo or Video</span>
-                <span className="text-sm text-gray-400">Max 15 seconds for videos</span>
+            {storyData.mediaPreview ? (
+              <div className="relative w-full h-96 rounded-lg overflow-hidden bg-black">
+                {storyData.mediaType === 'video' ? (
+                  <video 
+                    src={storyData.mediaPreview} 
+                    className="w-full h-full object-contain"
+                    controls
+                  />
+                ) : (
+                  <img 
+                    src={storyData.mediaPreview} 
+                    alt="Story preview" 
+                    className="w-full h-full object-contain"
+                  />
+                )}
+                <button
+                  onClick={handleRemoveStoryMedia}
+                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  type="button"
+                >
+                  <X size={20} />
+                </button>
               </div>
-              <input type="file" className="hidden" accept="image/*,video/*" />
-            </label>
+            ) : (
+              <label className="block w-full h-96 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
+                <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                  <Camera size={48} className="mb-3" />
+                  <span className="text-lg font-medium mb-2">Add Photo or Video</span>
+                  <span className="text-sm text-gray-400">Max 15 seconds for videos</span>
+                </div>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*,video/*"
+                  onChange={handleStoryMediaUpload}
+                />
+              </label>
+            )}
             <div className="mt-4">
               <input
                 type="text"
+                value={storyData.caption}
+                onChange={(e) => setStoryData(prev => ({ ...prev, caption: e.target.value }))}
                 className="input-field"
                 placeholder="Add a caption..."
               />
