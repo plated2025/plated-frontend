@@ -63,7 +63,7 @@ function QuickActionsBar() {
   ]
 
   return (
-    <div className="bg-gradient-to-r from-primary-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
+    <div className="bg-gradient-to-r from-primary-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700 relative z-10">
       <div className="px-4 py-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
