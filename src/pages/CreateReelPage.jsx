@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Upload, Scissors, Palette, Music, Play, Save, X, Type, Image as ImageIcon, Hash, Lock, Globe, Users, Trash2 } from 'lucide-react'
+import { ArrowLeft, Upload, Scissors, Palette, Music, Play, Save, X, Type, Image as ImageIcon, Hash, Lock, Globe, Users, Trash2, Search, TrendingUp, Pause } from 'lucide-react'
+import { musicLibrary, musicCategories, searchTracks, getAllTracks } from '../data/musicLibrary'
 
 function CreateReelPage() {
   const navigate = useNavigate()
@@ -26,14 +27,18 @@ function CreateReelPage() {
   const [textOverlays, setTextOverlays] = useState([])
   const [cropAspect, setCropAspect] = useState('9:16')
   
-  // Mock data
-  const musicTracks = [
-    { id: 1, name: 'Upbeat Kitchen', artist: 'Cooking Beats', duration: '2:45', trending: true },
-    { id: 2, name: 'Chill Vibes', artist: 'Lo-Fi Chef', duration: '3:12', trending: false },
-    { id: 3, name: 'Epic Cooking', artist: 'Food Symphony', duration: '2:30', trending: true },
-    { id: 4, name: 'Happy Chef', artist: 'Kitchen Groove', duration: '3:00', trending: false },
-    { id: 5, name: 'Smooth Jazz', artist: 'Dinner Jazz', duration: '2:55', trending: false }
-  ]
+  // Music states
+  const [musicCategory, setMusicCategory] = useState('trending')
+  const [musicSearch, setMusicSearch] = useState('')
+  const [playingPreview, setPlayingPreview] = useState(null)
+  
+  // Get music tracks based on category or search
+  const getMusicTracks = () => {
+    if (musicSearch.trim()) {
+      return searchTracks(musicSearch);
+    }
+    return musicLibrary[musicCategory] || [];
+  }
 
   const filters = [
     { id: 'none', name: 'Original', style: {} },
@@ -334,34 +339,104 @@ function CreateReelPage() {
               {/* Music Tab */}
               {activeTab === 'music' && (
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    {musicTracks.map((track) => (
-                      <button
-                        key={track.id}
-                        onClick={() => setSelectedMusic(track)}
-                        className={`w-full p-3 rounded-lg flex items-center gap-3 transition-all ${
-                          selectedMusic?.id === track.id
-                            ? 'bg-primary-600 text-white shadow-lg scale-[1.02]'
-                            : 'bg-white/30 backdrop-blur-sm text-gray-900 hover:bg-white/50 border border-white/30'
-                        }`}
-                      >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          selectedMusic?.id === track.id ? 'bg-white/20' : 'bg-white/30'
-                        }`}>
-                          {selectedMusic?.id === track.id ? (
-                            <Play size={18} className="text-white" />
-                          ) : (
-                            <Music size={18} className="text-gray-400" />
-                          )}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <p className="font-medium text-sm">{track.name}</p>
-                          <p className="text-xs opacity-75">{track.artist}</p>
-                        </div>
-                        <span className="text-xs">{track.duration}</span>
-                      </button>
-                    ))}
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <input
+                      type="text"
+                      value={musicSearch}
+                      onChange={(e) => setMusicSearch(e.target.value)}
+                      placeholder="Search music..."
+                      className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/30 backdrop-blur-sm border border-white/30 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-white/50"
+                    />
                   </div>
+
+                  {/* Category Pills */}
+                  {!musicSearch && (
+                    <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                      {musicCategories.map((category) => (
+                        <button
+                          key={category.id}
+                          onClick={() => setMusicCategory(category.id)}
+                          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                            musicCategory === category.id
+                              ? 'bg-primary-600 text-white shadow-lg'
+                              : 'bg-white/30 backdrop-blur-sm text-gray-700 hover:bg-white/50 border border-white/30'
+                          }`}
+                        >
+                          <span className="mr-1">{category.icon}</span>
+                          {category.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Selected Music Preview */}
+                  {selectedMusic && (
+                    <div className="bg-gradient-to-r from-primary-600 to-purple-600 text-white p-4 rounded-lg shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center text-2xl">
+                          {selectedMusic.cover}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold">{selectedMusic.name}</p>
+                          <p className="text-sm opacity-90">{selectedMusic.artist}</p>
+                        </div>
+                        <button
+                          onClick={() => setSelectedMusic(null)}
+                          className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Music Tracks List */}
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {getMusicTracks().length > 0 ? (
+                      getMusicTracks().map((track) => (
+                        <button
+                          key={track.id}
+                          onClick={() => setSelectedMusic(track)}
+                          className={`w-full p-3 rounded-lg flex items-center gap-3 transition-all ${
+                            selectedMusic?.id === track.id
+                              ? 'bg-primary-600 text-white shadow-lg scale-[1.02]'
+                              : 'bg-white/30 backdrop-blur-sm text-gray-900 hover:bg-white/50 border border-white/30'
+                          }`}
+                        >
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-2xl ${
+                            selectedMusic?.id === track.id ? 'bg-white/20' : 'bg-white/30'
+                          }`}>
+                            {track.cover}
+                          </div>
+                          <div className="flex-1 text-left">
+                            <p className="font-medium text-sm">{track.name}</p>
+                            <p className="text-xs opacity-75">{track.artist} • {track.duration}</p>
+                          </div>
+                          {selectedMusic?.id === track.id && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold bg-white/20 px-2 py-1 rounded-full">Selected</span>
+                            </div>
+                          )}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <Music size={48} className="mx-auto mb-3 opacity-50" />
+                        <p className="font-medium">No music found</p>
+                        <p className="text-sm">Try a different search term</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Category Info */}
+                  {!musicSearch && (
+                    <div className="text-center text-sm text-gray-600 bg-white/20 rounded-lg p-3">
+                      <p className="font-medium">{musicCategories.find(c => c.id === musicCategory)?.name}</p>
+                      <p className="text-xs opacity-75">{musicCategories.find(c => c.id === musicCategory)?.description}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
