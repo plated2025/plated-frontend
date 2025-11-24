@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { X, Send, Sparkles, ChefHat } from 'lucide-react'
 import { aiAPI } from '../../services/api'
 
+// ChatGPT-style AI Assistant - Clean modern design
 function AIAssistantModal({ isOpen, onClose }) {
   const [inputMessage, setInputMessage] = useState('')
   const [conversation, setConversation] = useState([
