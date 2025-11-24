@@ -5,7 +5,7 @@ import { discoveryAPI } from '../../services/api'
 
 function RightSidebar() {
   const navigate = useNavigate()
-  const { currentUser } = useApp()
+  const { currentUser, isAuthenticated } = useApp()
   const [suggestedUsers, setSuggestedUsers] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -30,24 +30,49 @@ function RightSidebar() {
   return (
     <div className="hidden xl:flex flex-col fixed right-0 top-0 h-screen w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto"
     >
-      {/* Current User Profile */}
-      <div className="flex items-center gap-3 mb-6">
-        <img
-          src={currentUser?.avatar || 'https://i.pravatar.cc/150?img=0'}
-          alt={currentUser?.name}
-          className="w-14 h-14 rounded-full object-cover"
-        />
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm truncate">{currentUser?.name || 'User'}</p>
-          <p className="text-gray-500 text-xs truncate">{currentUser?.specialty || 'Food Enthusiast'}</p>
+      {/* Current User Profile or Sign In Prompt */}
+      {isAuthenticated ? (
+        <div className="flex items-center gap-3 mb-6">
+          <img
+            src={currentUser?.avatar || 'https://i.pravatar.cc/150?img=0'}
+            alt={currentUser?.name}
+            className="w-14 h-14 rounded-full object-cover"
+          />
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm truncate">{currentUser?.name || 'User'}</p>
+            <p className="text-gray-500 text-xs truncate">{currentUser?.specialty || 'Food Enthusiast'}</p>
+          </div>
+          <button
+            onClick={() => navigate('/switch-accounts')}
+            className="text-primary-600 text-xs font-semibold hover:text-primary-700"
+          >
+            Switch
+          </button>
         </div>
-        <button
-          onClick={() => navigate('/switch-accounts')}
-          className="text-primary-600 text-xs font-semibold hover:text-primary-700"
-        >
-          Switch
-        </button>
-      </div>
+      ) : (
+        <div className="bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 rounded-xl p-4 mb-6">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+            Join Plated Today!
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+            Create recipes, save favorites, and connect with food lovers
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigate('/signup')}
+              className="flex-1 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors"
+            >
+              Sign Up
+            </button>
+            <button
+              onClick={() => navigate('/login')}
+              className="flex-1 bg-white hover:bg-gray-50 text-gray-900 text-xs font-semibold py-2 px-3 rounded-lg border border-gray-300 transition-colors"
+            >
+              Log In
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Suggestions */}
       <div className="mb-6">
