@@ -45,7 +45,9 @@ function UserTypeSelectionPage() {
   const handleContinue = () => {
     if (selectedType) {
       updateUserType(selectedType)
-      navigate('/onboarding/interests')
+      // Mark onboarding as complete and go to home
+      localStorage.setItem('hasCompletedOnboarding', 'true')
+      navigate('/home')
     }
   }
 
@@ -55,7 +57,9 @@ function UserTypeSelectionPage() {
       <button
         onClick={() => {
           updateUserType('regular')
-          navigate('/onboarding/interests')
+          // Mark onboarding as complete and go to home
+          localStorage.setItem('hasCompletedOnboarding', 'true')
+          navigate('/home')
         }}
         className="absolute top-6 right-6 px-6 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
       >
