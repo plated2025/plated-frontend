@@ -60,7 +60,9 @@
 	
 	<!-- Location Permission (if using geolocation) -->
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Plated uses your location to find nearby restaurants and local recipes.</string>
+	<string>Plated uses your location to provide weather-based recipe recommendations and find local restaurants.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Plated uses your location to provide personalized, weather-aware recipe suggestions based on your current conditions.</string>
 	
 	<!-- Notifications Permission -->
 	<key>NSUserNotificationsUsageDescription</key>
