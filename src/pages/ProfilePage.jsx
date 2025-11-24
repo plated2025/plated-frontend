@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Settings, Share2, MessageCircle, MoreVertical, MapPin, Globe, Grid, List, Bookmark, ChefHat, Calendar, Plus, Clock, Users as UsersIcon, Flame, Trophy, Star, Heart, Eye, TrendingUp, Award, Zap, Target, Camera, Video, Sparkles, QrCode, UserX, Flag } from 'lucide-react'
+import { Settings, Share2, MessageCircle, MoreVertical, MapPin, Globe, Grid, List, Bookmark, ChefHat, Calendar, Plus, Clock, Users as UsersIcon, Flame, Trophy, Star, Heart, Eye, TrendingUp, Award, Zap, Target, Camera, Video, Sparkles, QrCode, UserX, Flag, Loader } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { mockUsers, mockRecipes } from '../data/mockData'
-import { securityAPI } from '../services/api'
+import { securityAPI, recipeAPI, userAPI } from '../services/api'
 import FollowersModal from '../components/FollowersModal'
 import MealPlanModal from '../components/profile/MealPlanModal'
 import QRCodeModal from '../components/profile/QRCodeModal'
@@ -22,10 +21,10 @@ function ProfilePage() {
   const { currentUser } = useApp()
   
   const isOwnProfile = !userId || (currentUser && userId === currentUser.id.toString())
-  const profile = isOwnProfile 
-    ? (currentUser || mockUsers[0])
-    : mockUsers.find(u => u.id === parseInt(userId)) || mockUsers[0]
-
+  
+  const [profile, setProfile] = useState(null)
+  const [userRecipes, setUserRecipes] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('recipes')
   const [isFollowing, setIsFollowing] = useState(false)
   const [viewMode, setViewMode] = useState('grid')
@@ -45,10 +44,49 @@ function ProfilePage() {
   const [isBlocked, setIsBlocked] = useState(false)
   const moreMenuRef = useRef(null)
 
-  const userRecipes = mockRecipes.filter(r => r.creator.id === profile.id)
+  // Load profile and recipes from backend
+  useEffect(() => {
+    loadProfileData()
+  }, [userId])
 
-  // Mock meal plans data
-  const mealPlans = [
+  const loadProfileData = async () => {
+    setIsLoading(true)
+    try {
+      // Set profile (use currentUser if own profile)
+      if (isOwnProfile) {
+        setProfile(currentUser)
+      } else if (userId) {
+        // TODO: Fetch user profile from API when userAPI.getProfile() is implemented
+        // const response = await userAPI.getProfile(userId)
+        // setProfile(response.data)
+        setProfile(currentUser) // Fallback for now
+      }
+
+      // Fetch user's recipes
+      const recipesResponse = await recipeAPI.getRecipes({ 
+        userId: userId || currentUser?.id,
+        limit: 50 
+      })
+      setUserRecipes(recipesResponse.data || [])
+      
+      // TODO: Fetch collections from API
+      // const collectionsResponse = await userAPI.getCollections(userId || currentUser?.id)
+      // setUserCollections(collectionsResponse.data || [])
+      
+    } catch (error) {
+      console.error('Error loading profile data:', error)
+      setProfile(currentUser) // Fallback
+      setUserRecipes([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Meal plans (will be loaded from API in future)
+  const [mealPlans, setMealPlans] = useState([])
+  
+  // Sample meal plan data as fallback (will be removed when API is ready)
+  const sampleMealPlans = [
     {
       id: 1,
       name: 'This Week',
@@ -335,12 +373,24 @@ function ProfilePage() {
     setShowReportModal(true)
   }
 
+  // Show loading state
+  if (isLoading || !profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <Loader className="w-12 h-12 text-primary-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen pb-safe">
       {/* Header */}
       <header className="glass-nav sticky top-0 z-10 pt-safe">
         <div className="flex items-center justify-between px-4 py-2.5 sm:py-3">
-          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate max-w-[200px] sm:max-w-none">{profile.username || profile.name}</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate max-w-[200px] sm:max-w-none">{profile?.username || profile?.name}</h1>
           <div className="flex items-center gap-2">
             {isOwnProfile ? (
               <>
@@ -854,7 +904,7 @@ function ProfilePage() {
             
             {/* Meal Plans */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {mealPlans.map((plan) => {
+              {(mealPlans.length > 0 ? mealPlans : sampleMealPlans).map((plan) => {
                 const iconColors = {
                   1: { bg: 'from-green-100 to-emerald-100', text: 'text-green-600' },
                   2: { bg: 'from-blue-100 to-cyan-100', text: 'text-blue-600' },
