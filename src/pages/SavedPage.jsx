@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Grid, List, Bookmark } from 'lucide-react'
-import { mockRecipes } from '../data/mockData'
+// TODO: Connect to backend saved recipes API
 
 function SavedPage() {
   const navigate = useNavigate()
   const [viewMode, setViewMode] = useState('grid') // grid or list
-  const [savedRecipes, setSavedRecipes] = useState(mockRecipes.slice(0, 8))
+  const [savedRecipes, setSavedRecipes] = useState([]) // TODO: Fetch from backend API
 
   const handleRemoveSaved = (recipeId, e) => {
     e.stopPropagation()

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { X, ChevronLeft, ChevronRight, Heart, Send, Share2 } from 'lucide-react'
-import { mockStories } from '../data/mockData'
+// TODO: Connect to backend stories API
 import ReshareToStoryModal from '../components/ReshareToStoryModal'
 
 function StoryViewerPage() {
@@ -13,7 +13,8 @@ function StoryViewerPage() {
   const [message, setMessage] = useState('')
   const [showReshareModal, setShowReshareModal] = useState(false)
 
-  const userStories = mockStories.find(s => s.user.id === parseInt(userId))
+  // TODO: Fetch stories from backend API
+  const userStories = null
   
   // Handle invalid userId in useEffect to avoid state update during render
   useEffect(() => {

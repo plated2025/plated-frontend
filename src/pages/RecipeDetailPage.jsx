@@ -1,24 +1,26 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Heart, Bookmark, Share2, Calendar, Clock, Users, ChefHat, Send } from 'lucide-react'
-import { mockRecipes, mockUsers } from '../data/mockData'
+// Recipe details fetched from backend API
 
 function RecipeDetailPage() {
   const { recipeId } = useParams()
   const navigate = useNavigate()
-  const recipe = mockRecipes.find(r => r.id === parseInt(recipeId)) || mockRecipes[0]
   
-  // If recipe doesn't exist or is missing required fields
-  if (!recipe || !recipe.ingredients || !recipe.steps) {
+  // TODO: Fetch recipe from backend API using recipeId
+  const recipe = null
+  
+  // If recipe doesn't exist or is still loading
+  if (!recipe) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-900 dark:text-gray-100 mb-4">Recipe not found</p>
+          <p className="text-gray-900 dark:text-gray-100 mb-4">Recipe not found or loading...</p>
           <button 
-            onClick={() => navigate('/planner')}
+            onClick={() => navigate('/')}
             className="btn-primary"
           >
-            Back to Meal Planner
+            Back to Home
           </button>
         </div>
       </div>

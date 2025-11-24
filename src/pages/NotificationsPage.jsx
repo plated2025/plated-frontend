@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, MessageCircle, UserPlus, Bookmark, Clock, ArrowLeft, Video, Share2, Star, ChefHat, CheckCheck, Settings, Trash2, X, AlertCircle } from 'lucide-react'
-import { mockNotifications } from '../data/mockData'
 
 function NotificationsPage() {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('all')
   const [notifications, setNotifications] = useState([
-    ...mockNotifications,
-    // Add more notification types
+    // TODO: Fetch from backend API
+    // Sample notifications for now
     {
       id: 101,
       type: 'mention',

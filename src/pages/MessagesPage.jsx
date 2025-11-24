@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Edit, X, Check, XCircle } from 'lucide-react'
-import { mockMessages, mockUsers } from '../data/mockData'
+// TODO: Connect to backend chat API
 import DesktopSidebar from '../components/layout/DesktopSidebar'
 
 function MessagesPage() {
@@ -48,7 +48,9 @@ function MessagesPage() {
     }
   ])
 
-  const filteredUsers = mockUsers.filter(user => 
+  // TODO: Fetch from backend API
+  const allUsers = []
+  const filteredUsers = allUsers.filter(user => 
     user.name.toLowerCase().includes(searchUser.toLowerCase()) ||
     user.specialty.toLowerCase().includes(searchUser.toLowerCase())
   )
@@ -139,7 +141,8 @@ function MessagesPage() {
       {/* Primary Messages */}
       {activeTab === 'primary' && (
         <div className="divide-y divide-gray-200 lg:max-w-4xl lg:mx-auto">
-          {mockMessages.map(message => (
+          {/* TODO: Replace empty array with messages from backend */}
+          {[].map(message => (
             <button
               key={message.id}
               onClick={() => navigate(`/chat/${message.id}`)}
@@ -180,7 +183,8 @@ function MessagesPage() {
           ))}
 
           {/* Empty State */}
-          {mockMessages.length === 0 && (
+          {/* TODO: Replace empty array check with messages from backend */}
+          {[].length === 0 && (
             <div className="text-center py-12 bg-white">
               <div className="text-gray-400 mb-4">
                 <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
