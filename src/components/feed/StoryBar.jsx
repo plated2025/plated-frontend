@@ -1,18 +1,30 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
-import { mockStories } from '../../data/mockData'
 import { useApp } from '../../context/AppContext'
 
 function StoryBar() {
   const navigate = useNavigate()
   const { currentUser } = useApp()
+  const [stories, setStories] = useState([])
+
+  // Load stories from API in future
+  useEffect(() => {
+    // TODO: Fetch stories from API
+    // const loadStories = async () => {
+    //   const response = await storyAPI.getStories()
+    //   setStories(response.data || [])
+    // }
+    // loadStories()
+    setStories([]) // Empty for now - no mock data
+  }, [])
 
   const handleStoryClick = (userId) => {
     navigate(`/story/${userId}`)
   }
 
   // Don't render if no stories to show
-  if (!mockStories || mockStories.length === 0) {
+  if (!stories || stories.length === 0) {
     return null
   }
 
@@ -46,7 +58,7 @@ function StoryBar() {
         </button>
 
         {/* Creator Stories */}
-        {mockStories.map(({ id, user, hasNew }) => (
+        {stories.map(({ id, user, hasNew }) => (
           <button
             key={id}
             onClick={() => handleStoryClick(user.id)}

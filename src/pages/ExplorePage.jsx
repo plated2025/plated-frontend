@@ -1,23 +1,55 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, SlidersHorizontal, Clock, X, Film, Play, Eye, Users, Flame } from 'lucide-react'
-import { mockRecipes, cuisineFilters } from '../data/mockData'
 import DesktopSidebar from '../components/layout/DesktopSidebar'
+import { recipeAPI } from '../services/api'
 
 function ExplorePage() {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilters, setActiveFilters] = useState(['all'])
-  const [searchResults, setSearchResults] = useState(mockRecipes)
+  const [searchResults, setSearchResults] = useState([])
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [sortBy, setSortBy] = useState('recent')
   const [difficulty, setDifficulty] = useState('all')
   const [cookTime, setCookTime] = useState('all')
   const [displayCount, setDisplayCount] = useState(20)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Live cooking sessions (empty for production)
+  // Live cooking sessions (from backend in future)
   const liveSessions = []
+
+  // Cuisine filters
+  const cuisineFilters = [
+    { id: 'all', name: 'All Cuisines', emoji: '🌍' },
+    { id: 'italian', name: 'Italian', emoji: '🍝' },
+    { id: 'asian', name: 'Asian', emoji: '🍜' },
+    { id: 'mexican', name: 'Mexican', emoji: '🌮' },
+    { id: 'mediterranean', name: 'Mediterranean', emoji: '🥗' },
+    { id: 'american', name: 'American', emoji: '🍔' },
+    { id: 'indian', name: 'Indian', emoji: '🍛' },
+    { id: 'french', name: 'French', emoji: '🥐' },
+    { id: 'japanese', name: 'Japanese', emoji: '🍣' }
+  ]
+
+  // Load recipes from API on mount
+  useEffect(() => {
+    loadRecipes()
+  }, [])
+
+  const loadRecipes = async () => {
+    setIsLoading(true)
+    try {
+      const response = await recipeAPI.getRecipes({ limit: 20 })
+      setSearchResults(response.data || [])
+    } catch (error) {
+      console.error('Error loading recipes:', error)
+      setSearchResults([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const toggleFilter = (filterId) => {
     if (filterId === 'all') {
@@ -26,7 +58,7 @@ function ExplorePage() {
       if (searchQuery.trim()) {
         handleSearch(searchQuery)
       } else {
-        setSearchResults(mockRecipes)
+        loadRecipes()
       }
     } else {
       setActiveFilters(prev => {
@@ -44,9 +76,21 @@ function ExplorePage() {
   }
 
   const applyFilters = (filterId, query = '') => {
-    let filtered = mockRecipes
+    // In production, this would call API with filters
+    // For now, just reload recipes
+    loadRecipes()
+    
+    // Future implementation:
+    // recipeAPI.getRecipes({ cuisine: filterId, search: query, limit: 20 })
+    //   .then(response => setSearchResults(response.data || []))
+    //   .catch(error => console.error(error))
+  }
 
-    // Filter by cuisine
+  const applyFiltersOLD = (filterId, query = '') => {
+    // REMOVED: No longer using mock data
+    let filtered = []
+
+    // Filter by cuisine - now handled by backend API
     if (filterId && filterId !== 'all') {
       filtered = filtered.filter(recipe => {
         const cuisineLower = recipe.cuisine?.toLowerCase() || ''
@@ -84,17 +128,22 @@ function ExplorePage() {
     
     if (activeFilter) {
       // Apply both filter and search
+      setActiveFilters(prevFilters => prevFilters.filter(f => f !== 'all'))
+      // Filter recipes - in production, call API with filter
       applyFilters(activeFilter, query)
     } else {
       // Just search
       if (query.trim()) {
-        const filtered = mockRecipes.filter(recipe =>
-          recipe.title.toLowerCase().includes(query.toLowerCase()) ||
-          recipe.description.toLowerCase().includes(query.toLowerCase())
-        )
-        setSearchResults(filtered)
+        recipeAPI.getRecipes({ search: query, limit: 20 })
+          .then(response => {
+            setSearchResults(response.data || [])
+          })
+          .catch(error => {
+            console.error('Error searching recipes:', error)
+            setSearchResults([])
+          })
       } else {
-        setSearchResults(mockRecipes)
+        loadRecipes()
       }
     }
   }

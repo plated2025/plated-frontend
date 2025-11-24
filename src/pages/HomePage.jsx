@@ -10,23 +10,37 @@ import TrendingSection from '../components/home/TrendingSection'
 import AchievementStreak from '../components/home/AchievementStreak'
 import SmartFeedFilter from '../components/home/SmartFeedFilter'
 import SeasonalSuggestions from '../components/home/SeasonalSuggestions'
-import { mockRecipes } from '../data/mockData'
 import { useApp } from '../context/AppContext'
+import { recipeAPI } from '../services/api'
 
 function HomePage() {
   const navigate = useNavigate()
   const { notifications, unreadMessages } = useApp()
-  const [posts, setPosts] = useState(mockRecipes)
-  const [isLoading, setIsLoading] = useState(false)
+  const [posts, setPosts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [activeFilters, setActiveFilters] = useState([])
   const [showAIFeed, setShowAIFeed] = useState(true)
 
-  const handleRefresh = () => {
+  // Load recipes from API
+  useEffect(() => {
+    loadPosts()
+  }, [])
+
+  const loadPosts = async () => {
     setIsLoading(true)
-    setTimeout(() => {
-      setPosts([...mockRecipes])
+    try {
+      const response = await recipeAPI.getRecipes({ limit: 20 })
+      setPosts(response.data || [])
+    } catch (error) {
+      console.error('Error loading posts:', error)
+      setPosts([])
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
+  }
+
+  const handleRefresh = () => {
+    loadPosts()
   }
 
   const handleFilterChange = (filters) => {

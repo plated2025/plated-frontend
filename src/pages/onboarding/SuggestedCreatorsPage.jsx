@@ -1,14 +1,43 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check } from 'lucide-react'
-import { mockUsers, cuisineFilters } from '../../data/mockData'
+import { userAPI } from '../../services/api'
 
 function SuggestedCreatorsPage() {
   const navigate = useNavigate()
   const [selectedCreators, setSelectedCreators] = useState([])
   const [activeFilter, setActiveFilter] = useState('all')
+  const [creators, setCreators] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  const creators = mockUsers.filter(u => u.isCreator)
+  // Cuisine filters for creator filtering
+  const cuisineFilters = [
+    { id: 'all', name: 'All' },
+    { id: 'italian', name: 'Italian' },
+    { id: 'asian', name: 'Asian' },
+    { id: 'mexican', name: 'Mexican' },
+    { id: 'mediterranean', name: 'Mediterranean' }
+  ]
+
+  // Load creators from API
+  useEffect(() => {
+    loadCreators()
+  }, [])
+
+  const loadCreators = async () => {
+    setIsLoading(true)
+    try {
+      // In future: API call to get suggested creators
+      // const response = await userAPI.getSuggestedCreators()
+      // setCreators(response.data || [])
+      setCreators([]) // Empty for now - no mock data
+    } catch (error) {
+      console.error('Error loading creators:', error)
+      setCreators([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const toggleCreator = (creatorId) => {
     setSelectedCreators(prev => 
