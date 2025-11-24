@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User, Check, X, Loader } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
+import { authAPI, userAPI } from '../../services/api'
 
 function UsernameSelectionPage() {
   const navigate = useNavigate()
@@ -19,9 +20,7 @@ function UsernameSelectionPage() {
         setChecking(true)
         setError('')
         try {
-          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-          const response = await fetch(`${API_URL}/auth/check-username/${username}`)
-          const data = await response.json()
+          const data = await authAPI.checkUsername(username)
           setAvailable(data.available)
           if (!data.available) {
             setError('Username is already taken')
@@ -52,27 +51,11 @@ function UsernameSelectionPage() {
 
     setLoading(true)
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-      const token = localStorage.getItem('token')
-      const response = await fetch(`${API_URL}/users/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ username: username.toLowerCase() })
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        // Username set successfully, proceed to next step
-        navigate('/onboarding/user-type')
-      } else {
-        setError(data.message || 'Failed to set username')
-      }
+      await userAPI.updateProfile({ username: username.toLowerCase() })
+      // Username set successfully, proceed to next step
+      navigate('/onboarding/user-type')
     } catch (error) {
-      setError('Error setting username. Please try again.')
+      setError(error.message || 'Error setting username. Please try again.')
       console.error('Error:', error)
     } finally {
       setLoading(false)

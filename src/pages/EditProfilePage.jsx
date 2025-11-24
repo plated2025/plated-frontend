@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Camera, Check, X, Loader2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { userAPI } from '../services/api'
+import { userAPI, authAPI } from '../services/api'
 
 function EditProfilePage() {
   const navigate = useNavigate()
@@ -60,12 +60,10 @@ function EditProfilePage() {
       setUsernameError('')
       
       try {
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-        const response = await fetch(`${API_URL}/auth/check-username/${username}`)
-        const data = await response.json()
+        const response = await authAPI.checkUsername(username)
         
-        setUsernameAvailable(data.available)
-        if (!data.available) {
+        setUsernameAvailable(response.available)
+        if (!response.available) {
           setUsernameError('Username is already taken')
         }
       } catch (error) {

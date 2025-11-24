@@ -68,6 +68,12 @@ export const authAPI = {
     });
   },
 
+  checkUsername: async (username) => {
+    return await apiRequest(`/auth/check-username/${username}`, {
+      method: 'GET',
+    });
+  },
+
   logout: () => {
     localStorage.removeItem('token');
     return Promise.resolve();

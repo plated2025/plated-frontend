@@ -81,7 +81,7 @@ export const AppProvider = ({ children }) => {
         } catch (error) {
           console.error('Auth check failed:', error)
           // Only clear if it's an auth error (401), not network issues
-          if (error.response && error.response.status === 401) {
+          if (error?.response?.status === 401 || error?.status === 401) {
             localStorage.removeItem('token')
             localStorage.removeItem('currentUser')
             localStorage.removeItem('hasCompletedOnboarding')

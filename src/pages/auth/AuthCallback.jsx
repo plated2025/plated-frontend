@@ -22,8 +22,9 @@ function AuthCallback() {
       // Save token to localStorage
       localStorage.setItem('token', token);
       
-      // Fetch user data
-      fetch('http://localhost:5000/api/auth/me', {
+      // Fetch user data using environment variable
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      fetch(`${API_URL}/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
