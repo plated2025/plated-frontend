@@ -20,6 +20,62 @@ function EditProfilePage() {
   const [usernameError, setUsernameError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
+  const [avatarPreview, setAvatarPreview] = useState(currentUser?.avatar || '')
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size must be less than 5MB')
+      return
+    }
+
+    setUploadingAvatar(true)
+
+    try {
+      // Convert to base64 for preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+
+      // In production, upload to cloud storage (Cloudinary, AWS S3, etc.)
+      // For now, we'll use the base64 as the avatar
+      // You should implement actual file upload in production
+      
+      reader.onloadend = async () => {
+        const base64 = reader.result
+        
+        try {
+          await userAPI.updateProfile({
+            avatar: base64
+          })
+          
+          setAvatarPreview(base64)
+          updateUser({ ...currentUser, avatar: base64 })
+        } catch (error) {
+          console.error('Error uploading avatar:', error)
+          alert('Failed to upload avatar. Please try again.')
+        } finally {
+          setUploadingAvatar(false)
+        }
+      }
+    } catch (error) {
+      console.error('Error processing avatar:', error)
+      alert('Failed to process image. Please try again.')
+      setUploadingAvatar(false)
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -141,12 +197,27 @@ function EditProfilePage() {
         <div className="flex justify-center mb-6">
           <div className="relative">
             <img
-              src={currentUser?.avatar || 'https://i.pravatar.cc/150'}
+              src={avatarPreview || currentUser?.avatar || 'https://i.pravatar.cc/150'}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover"
             />
-            <button className="absolute bottom-0 right-0 w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-lg">
-              <Camera size={16} />
+            <input
+              type="file"
+              id="avatar-upload"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+            <button 
+              onClick={() => document.getElementById('avatar-upload').click()}
+              disabled={uploadingAvatar}
+              className="absolute bottom-0 right-0 w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-primary-700 disabled:opacity-50"
+            >
+              {uploadingAvatar ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Camera size={16} />
+              )}
             </button>
           </div>
         </div>

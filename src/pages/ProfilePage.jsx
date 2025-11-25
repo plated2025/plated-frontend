@@ -323,9 +323,23 @@ function ProfilePage() {
     setShowCoverEditor(true)
   }
 
-  const handleSaveCover = (coverData) => {
+  const handleSaveCover = async (coverData) => {
     setCoverPhoto(coverData.image)
-    // In production, save coverData to backend
+    
+    // Save cover photo to backend
+    try {
+      await userAPI.updateProfile({
+        coverImage: coverData.image
+      })
+      
+      // Update current user in context
+      if (currentUser) {
+        setProfile({ ...profile, coverImage: coverData.image })
+      }
+    } catch (error) {
+      console.error('Error saving cover photo:', error)
+      alert('Failed to save cover photo. Please try again.')
+    }
   }
 
   const handleAddStory = () => {
