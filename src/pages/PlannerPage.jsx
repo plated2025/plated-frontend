@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Calendar, ChevronLeft, ChevronRight, Plus, ShoppingCart, Download, Sparkles, Activity, Upload, Copy } from 'lucide-react'
 import { format, startOfWeek, addDays, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns'
@@ -6,16 +6,61 @@ import DesktopSidebar from '../components/layout/DesktopSidebar'
 import SmartSuggestions from '../components/planner/SmartSuggestions'
 import AdvancedMealPlanModal from '../components/planner/AdvancedMealPlanModal'
 import NutritionDashboard from '../components/planner/NutritionDashboard'
+import { mealPlannerAPI } from '../services/api'
 
 function PlannerPage() {
   const navigate = useNavigate()
   const [calendarView, setCalendarView] = useState('weekly') // 'weekly' or 'monthly'
   const [currentDate, setCurrentDate] = useState(new Date())
   const [meals, setMeals] = useState({})
+  const [mealPlan, setMealPlan] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [showAddMeal, setShowAddMeal] = useState(null)
   const [showAdvancedModal, setShowAdvancedModal] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [selectedDay, setSelectedDay] = useState(null)
+
+  // Load meal plans from backend
+  useEffect(() => {
+    loadMealPlans()
+  }, [])
+
+  const loadMealPlans = async () => {
+    setIsLoading(true)
+    try {
+      const response = await mealPlannerAPI.getMealPlans()
+      const plans = response.data || []
+      
+      // Get the current/active plan or create one
+      if (plans.length > 0) {
+        const activePlan = plans.find(p => p.status === 'active') || plans[0]
+        setMealPlan(activePlan)
+        
+        // Convert meals array to object keyed by date
+        const mealsObj = {}
+        activePlan.meals?.forEach(meal => {
+          const dateKey = format(new Date(meal.date), 'yyyy-MM-dd')
+          if (!mealsObj[dateKey]) {
+            mealsObj[dateKey] = {}
+          }
+          mealsObj[dateKey][meal.mealType] = meal
+        })
+        setMeals(mealsObj)
+      } else {
+        // Create a default meal plan
+        const newPlan = await mealPlannerAPI.createMealPlan({
+          name: 'My Meal Plan',
+          startDate: new Date(),
+          endDate: addDays(new Date(), 7)
+        })
+        setMealPlan(newPlan.data)
+      }
+    } catch (error) {
+      console.error('Error loading meal plans:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack']
 
@@ -42,13 +87,54 @@ function PlannerPage() {
     setShowAddMeal({ date, mealType })
   }
 
+  const handleAddMealToPlanner = async (recipe, date, mealType) => {
+    if (!mealPlan) {
+      alert('Please create a meal plan first')
+      return
+    }
+
+    try {
+      const mealData = {
+        recipeId: recipe._id || recipe.id,
+        date: date,
+        mealType: mealType,
+        recipeName: recipe.title,
+        recipeImage: recipe.image,
+        servings: recipe.servings || 2
+      }
+
+      await mealPlannerAPI.addMeal(mealPlan._id, mealData)
+      
+      // Update local state
+      const dateKey = format(new Date(date), 'yyyy-MM-dd')
+      setMeals(prev => ({
+        ...prev,
+        [dateKey]: {
+          ...prev[dateKey],
+          [mealType]: { ...mealData, recipe }
+        }
+      }))
+
+      setShowAddMeal(null)
+      alert('Meal added successfully!')
+    } catch (error) {
+      console.error('Error adding meal:', error)
+      alert('Failed to add meal. Please try again.')
+    }
+  }
+
   const generateShoppingList = () => {
     navigate('/shopping-list')
   }
 
   const handleSelectRecipe = (recipe) => {
-    // Navigate to recipe detail page
-    navigate(`/recipe/${recipe.id}`)
+    // If in add meal mode, add to planner
+    if (showAddMeal) {
+      handleAddMealToPlanner(recipe, showAddMeal.date, showAddMeal.mealType)
+    } else {
+      // Otherwise navigate to recipe detail
+      navigate(`/recipe/${recipe.id}`)
+    }
   }
 
   const handleGeneratePlan = (config) => {

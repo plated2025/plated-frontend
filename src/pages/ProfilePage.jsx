@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Settings, Share2, MessageCircle, MoreVertical, MapPin, Globe, Grid, List, Bookmark, ChefHat, Calendar, Plus, Clock, Users as UsersIcon, Flame, Trophy, Star, Heart, Eye, TrendingUp, Award, Zap, Target, Camera, Video, Sparkles, QrCode, UserX, Flag, Loader } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { securityAPI, recipeAPI, userAPI, collectionAPI } from '../services/api'
+import { securityAPI, recipeAPI, userAPI, collectionAPI, mealPlannerAPI } from '../services/api'
 import FollowersModal from '../components/FollowersModal'
 import MealPlanModal from '../components/profile/MealPlanModal'
 import QRCodeModal from '../components/profile/QRCodeModal'
@@ -89,11 +89,28 @@ function ProfilePage() {
     }
   }
 
-  // Meal plans (will be loaded from API in future)
+  // Meal plans loaded from backend
   const [mealPlans, setMealPlans] = useState([])
   
-  // Sample meal plan data as fallback (will be removed when API is ready)
-  const sampleMealPlans = [
+  // Load meal plans from backend
+  useEffect(() => {
+    loadMealPlans()
+  }, [])
+
+  const loadMealPlans = async () => {
+    if (!isOwnProfile) return // Only load for own profile
+    
+    try {
+      const response = await mealPlannerAPI.getMealPlans()
+      setMealPlans(response.data || [])
+    } catch (error) {
+      console.error('Error loading meal plans:', error)
+      setMealPlans([])
+    }
+  }
+  
+  // Remove sample meal plans - using real data from backend
+  const removedSampleMealPlans = [
     {
       id: 1,
       name: 'This Week',
@@ -289,15 +306,8 @@ function ProfilePage() {
     }
   ]
 
-  // Collections data
-  const defaultCollections = [
-    { id: 1, name: 'Pasta', icon: ChefHat, gradient: 'from-red-500 to-orange-500', bg: 'from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30', border: 'border-red-400 dark:border-red-600', text: 'text-red-600 dark:text-red-400' },
-    { id: 2, name: 'Healthy', icon: Target, gradient: 'from-green-500 to-emerald-500', bg: 'from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30', border: 'border-green-400 dark:border-green-600', text: 'text-green-600 dark:text-green-400' },
-    { id: 3, name: 'Quick', icon: Zap, gradient: 'from-blue-500 to-cyan-500', bg: 'from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30', border: 'border-blue-400 dark:border-blue-600', text: 'text-blue-600 dark:text-blue-400' },
-    { id: 4, name: 'Favorites', icon: Heart, gradient: 'from-purple-500 to-pink-500', bg: 'from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30', border: 'border-purple-400 dark:border-purple-600', text: 'text-purple-600 dark:text-purple-400' },
-    { id: 5, name: 'Reels', icon: Video, gradient: 'from-yellow-500 to-orange-500', bg: 'from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30', border: 'border-yellow-400 dark:border-yellow-600', text: 'text-yellow-600 dark:text-yellow-400' }
-  ]
-  const collections = [...defaultCollections, ...userCollections]
+  // Collections data - use only real collections from backend
+  const collections = userCollections
 
   const handleFollowToggle = () => {
     setIsFollowing(!isFollowing)
