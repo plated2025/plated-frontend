@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { authAPI } from '../services/api'
+import { authAPI, userAPI } from '../services/api'
 
 const AppContext = createContext()
 
@@ -143,7 +143,7 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('hasCompletedOnboarding', 'true')
   }
 
-  const updateUserType = (type) => {
+  const updateUserType = async (type) => {
     setUserType(type)
     setHasSelectedUserType(true)
     localStorage.setItem('userType', type)
@@ -154,6 +154,13 @@ export const AppProvider = ({ children }) => {
       const updatedUser = { ...currentUser, userType: type }
       setCurrentUser(updatedUser)
       localStorage.setItem('currentUser', JSON.stringify(updatedUser))
+      
+      // Save to backend
+      try {
+        await userAPI.updateProfile({ userType: type })
+      } catch (error) {
+        console.error('Error updating user type:', error)
+      }
     }
   }
 
