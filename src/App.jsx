@@ -123,8 +123,8 @@ function App() {
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
         
-        {/* Root redirect - show home page with recipes */}
-        <Route path="/" element={<Navigate to="/home" />} />
+        {/* Root redirect - first-time visitors see welcome, logged-in users see home */}
+        <Route path="/" element={<Navigate to={isAuthenticated ? "/home" : "/welcome"} />} />
         
         {/* Onboarding Routes */}
         <Route 

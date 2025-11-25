@@ -393,7 +393,7 @@ function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen pb-safe">
+    <div className="min-h-screen pb-20 lg:pb-0 pb-safe">
       {/* Header */}
       <header className="glass-nav sticky top-0 z-10 pt-safe">
         <div className="flex items-center justify-between px-4 py-2.5 sm:py-3">
@@ -513,8 +513,8 @@ function ProfilePage() {
           </div>
 
           {/* Stats - Animated Cards */}
-          <div className="flex-1 w-full">
-            <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="flex-1 w-full px-1">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
               <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl p-3 hover:scale-105 transition-transform cursor-pointer">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <ChefHat size={16} className="text-blue-600 dark:text-blue-400" />
@@ -561,14 +561,14 @@ function ProfilePage() {
             </div>
 
             {/* Quick Stats Row - Unique Feature! */}
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-2 sm:gap-3">
               <div 
                 onClick={() => setSelectedStat('streak')}
                 className="bg-orange-50 dark:bg-orange-900/20 rounded-lg px-2 py-1.5 text-center cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
               >
                 <div className="flex items-center justify-center gap-1">
                   <Flame size={12} className="text-orange-600 dark:text-orange-400" />
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">12</span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">{profile.streak || 0}</span>
                 </div>
                 <p className="text-[10px] text-gray-600 dark:text-gray-400">Streak</p>
               </div>
@@ -578,7 +578,7 @@ function ProfilePage() {
               >
                 <div className="flex items-center justify-center gap-1">
                   <Star size={12} className="text-yellow-600 dark:text-yellow-400" />
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">4.8</span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">{profile.rating ? profile.rating.toFixed(1) : '0.0'}</span>
                 </div>
                 <p className="text-[10px] text-gray-600 dark:text-gray-400">Rating</p>
               </div>
@@ -588,7 +588,13 @@ function ProfilePage() {
               >
                 <div className="flex items-center justify-center gap-1">
                   <Eye size={12} className="text-blue-600 dark:text-blue-400" />
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">2.5M</span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">
+                    {profile.views >= 1000000 
+                      ? `${(profile.views / 1000000).toFixed(1)}M`
+                      : profile.views >= 1000
+                      ? `${Math.floor(profile.views / 1000)}K`
+                      : profile.views || 0}
+                  </span>
                 </div>
                 <p className="text-[10px] text-gray-600 dark:text-gray-400">Views</p>
               </div>
@@ -598,7 +604,7 @@ function ProfilePage() {
               >
                 <div className="flex items-center justify-center gap-1">
                   <Trophy size={12} className="text-purple-600 dark:text-purple-400" />
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">Lv.8</span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">Lv.{profile.level || 0}</span>
                 </div>
                 <p className="text-[10px] text-gray-600 dark:text-gray-400">Level</p>
               </div>
