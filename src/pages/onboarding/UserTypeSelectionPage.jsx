@@ -52,7 +52,7 @@ function UserTypeSelectionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-black dark:to-gray-900 flex items-center justify-center p-4 relative">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-black dark:to-gray-900 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative">
       {/* Skip Button - Top Right */}
       <button
         onClick={() => {
@@ -66,19 +66,19 @@ function UserTypeSelectionPage() {
         Skip
       </button>
 
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+        <div className="text-center mb-6 sm:mb-8 px-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
             Welcome to Plated!
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
             Select your account type to get started
           </p>
         </div>
 
         {/* User Type Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {userTypes.map((type) => {
             const Icon = type.icon
             const isSelected = selectedType === type.id
@@ -87,7 +87,7 @@ function UserTypeSelectionPage() {
               <button
                 key={type.id}
                 onClick={() => setSelectedType(type.id)}
-                className={`relative overflow-hidden rounded-3xl p-6 transition-all duration-300 text-left ${
+                className={`relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300 text-left ${
                   isSelected
                     ? 'scale-105 shadow-2xl'
                     : 'hover:scale-102 shadow-lg hover:shadow-xl'
@@ -113,12 +113,12 @@ function UserTypeSelectionPage() {
                 {/* Content */}
                 <div className="relative z-10">
                   {/* Icon & Title */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${type.gradient} flex items-center justify-center shadow-lg`}>
-                      <Icon size={32} className="text-white" />
+                  <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                    <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br ${type.gradient} flex items-center justify-center shadow-lg`}>
+                      <Icon size={24} className="text-white sm:w-8 sm:h-8" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                         {type.title}
                       </h3>
                       {isSelected && (
@@ -130,20 +130,20 @@ function UserTypeSelectionPage() {
                   </div>
 
                   {/* Description */}
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
                     {type.description}
                   </p>
 
                   {/* Features */}
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {type.features.map((feature, index) => {
                       const FeatureIcon = feature.icon
                       return (
-                        <div key={index} className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${type.gradient} flex items-center justify-center flex-shrink-0`}>
-                            <FeatureIcon size={16} className="text-white" />
+                        <div key={index} className="flex items-center gap-2 sm:gap-3">
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br ${type.gradient} flex items-center justify-center flex-shrink-0`}>
+                            <FeatureIcon size={14} className="text-white sm:w-4 sm:h-4" />
                           </div>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                          <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">
                             {feature.text}
                           </span>
                         </div>
@@ -178,7 +178,7 @@ function UserTypeSelectionPage() {
         <button
           onClick={handleContinue}
           disabled={!selectedType}
-          className={`w-full py-4 rounded-2xl font-bold text-lg transition-all ${
+          className={`w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg transition-all ${
             selectedType
               ? 'bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 hover:from-primary-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105'
               : 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
