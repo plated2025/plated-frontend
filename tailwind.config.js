@@ -29,8 +29,9 @@ export default {
           500: '#6b7280',
           600: '#4b5563',
           700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
+          800: '#1a1d29',  // Darker for better dark mode
+          900: '#0f1117',  // Much darker for backgrounds
+          950: '#050507',  // Almost black for deepest backgrounds
         },
       },
       animation: {
