@@ -1,59 +1,32 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Heart, MessageCircle, UserPlus, Bookmark, Clock, ArrowLeft, Video, Share2, Star, ChefHat, CheckCheck, Settings, Trash2, X, AlertCircle } from 'lucide-react'
+import { notificationAPI } from '../services/api'
 
 function NotificationsPage() {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('all')
-  const [notifications, setNotifications] = useState([
-    // TODO: Fetch from backend API
-    // Sample notifications for now
-    {
-      id: 101,
-      type: 'mention',
-      user: { id: 6, name: 'Alex Rivera', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150' },
-      content: 'mentioned you in a comment',
-      timestamp: '1h ago',
-      read: false,
-      recipe: { id: 1, image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150', title: 'Pancakes' }
-    },
-    {
-      id: 102,
-      type: 'cooking_session',
-      user: { id: 3, name: 'Maria Garcia', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150' },
-      content: 'invited you to a cooking session',
-      timestamp: '2h ago',
-      read: false
-    },
-    {
-      id: 103,
-      type: 'share',
-      user: { id: 4, name: 'James Wilson', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150' },
-      content: 'shared your recipe',
-      timestamp: '3h ago',
-      read: true,
-      recipe: { id: 2, image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=150', title: 'Pizza' }
-    },
-    {
-      id: 104,
-      type: 'rating',
-      user: { id: 5, name: 'Emma Thompson', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150' },
-      content: 'rated your recipe 5 stars',
-      timestamp: '5h ago',
-      read: false,
-      recipe: { id: 3, image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=150', title: 'Pasta' }
-    },
-    {
-      id: 105,
-      type: 'collection',
-      user: { id: 2, name: 'Sarah Johnson', avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150' },
-      content: 'added your recipe to their collection "Favorites"',
-      timestamp: '1d ago',
-      read: true,
-      recipe: { id: 4, image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=150', title: 'Burger' }
-    }
-  ])
+  const [notifications, setNotifications] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
+
+  // Load notifications from backend
+  useEffect(() => {
+    loadNotifications()
+  }, [])
+
+  const loadNotifications = async () => {
+    setIsLoading(true)
+    try {
+      const response = await notificationAPI.getNotifications()
+      setNotifications(response.data || [])
+    } catch (error) {
+      console.error('Error loading notifications:', error)
+      setNotifications([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
   
   const filters = [
     { id: 'all', label: 'All', icon: null },
